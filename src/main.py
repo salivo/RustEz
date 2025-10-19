@@ -1,6 +1,6 @@
 import pygame
 
-pygame.init()
+_ = pygame.init()
 
 # Window setup
 WIDTH, HEIGHT = 400, 300
@@ -15,7 +15,7 @@ speed = 5
 # Main loop
 running = True
 while running:
-    pygame.time.delay(30)
+    _ = pygame.time.delay(30)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -33,8 +33,8 @@ while running:
         y += speed
 
     # Drawing
-    screen.fill((0, 0, 0))
-    pygame.draw.rect(screen, (255, 0, 0), (x, y, width, height))
+    (_,) = screen.fill((0, 0, 0))
+    (_,) = pygame.draw.rect(screen, (255, 0, 0), (x, y, width, height))
     pygame.display.update()
 
 pygame.quit()
