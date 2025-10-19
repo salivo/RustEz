@@ -1,10 +1,7 @@
-from typing import override
-import pygame
-from camera import Camera
 import entity
 
 
 class Player(entity.Entity):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, x: int = 0, y: int = 0):
+        super().__init__(x, y)
         self.speed: int = 5

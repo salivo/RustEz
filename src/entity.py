@@ -4,8 +4,8 @@ from camera import Camera
 
 
 class Entity:
-    def __init__(self):
-        self.rect: pygame.Rect = pygame.Rect(0, 0, 32, 32)
+    def __init__(self, x: int = 0, y: int = 0):
+        self.rect: pygame.Rect = pygame.Rect(x, y, 32, 32)
 
     def draw(self, screen: pygame.Surface, camera: Camera):
         _ = pygame.draw.rect(
