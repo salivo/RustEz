@@ -1,6 +1,8 @@
 import camera
 import levels.level1
 import pygame
+from mob import Mob
+import random
 
 from player import Player
 
@@ -13,7 +15,11 @@ width, height = info.current_w, info.current_h
 camera = camera.Camera(width, height)
 player = Player()
 
-speed = 5
+mob = Mob(player)
+
+# Rectangle setup
+x, y = 0, 0
+width, height = 60, 40
 
 
 all_objects = [player]

@@ -16,6 +16,6 @@ class Player(entity.Entity):
     def draw(self, screen: pygame.Surface, camera: Camera):
         _ = pygame.draw.rect(
             screen,
-            (255, 0, 0),
+            (0, 0, 255),
             (self.x - camera.x, self.y - camera.y, self.width, self.height),
         )
