@@ -186,22 +186,23 @@ def intro_screen():
         if post_warp_fade and fade_black_alpha >= 255:
             running = False
 
-# --- Запуск логотипу та intro ---
-show_logo()
-intro_screen()
+if __name__ == "__main__": 
+    # --- Запуск логотипу та intro ---
+    show_logo()
+    intro_screen()
 
-# --- Поява тексту бою ---
-battle_text = "Entering the battlefield..."
-battle_surf = end_font.render(battle_text, True, WHITE).convert_alpha()
-battle_alpha = 0
+    # --- Поява тексту бою ---
+    battle_text = "Entering the battlefield..."
+    battle_surf = end_font.render(battle_text, True, WHITE).convert_alpha()
+    battle_alpha = 0
 
-while battle_alpha < 255:
-    screen.fill(BLACK)
-    battle_alpha = min(battle_alpha + 3, 255)
-    battle_surf.set_alpha(battle_alpha)
-    screen.blit(battle_surf, (WIDTH//2 - battle_surf.get_width()//2,
-                              HEIGHT//2 - battle_surf.get_height()//2)
-    clock.tick(75)
+    while battle_alpha < 255:
+        screen.fill(BLACK)
+        battle_alpha = min(battle_alpha + 3, 255)
+        battle_surf.set_alpha(battle_alpha)
+        screen.blit(battle_surf, (WIDTH//2 - battle_surf.get_width()//2,
+                                HEIGHT//2 - battle_surf.get_height()//2))
+        clock.tick(75)
 
 
-pygame.quit()
+    pygame.quit()
