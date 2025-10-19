@@ -6,8 +6,9 @@ import time
 pygame.init()
 
 # --- Екран ---
-WIDTH, HEIGHT = 1920, 1080  # повноекранно
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+info = pygame.display.Info()
+width, height = info.current_w, info.current_h
+screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
 pygame.display.set_caption("Bug Hunt: Intro")
 
 # --- Кольори ---
@@ -17,10 +18,10 @@ WHITE = (255, 255, 255)
 D_WHITE = (100, 100, 100)
 
 # --- Шрифти ---
-font_text = pygame.font.SysFont('Arial', 32, True)
-font_button = pygame.font.SysFont('Arial', 36, True)
-end_font = pygame.font.SysFont('Arial', 60)
-logo_font = pygame.font.SysFont('Franklin Gothic Medium', 144, True, False)
+font_text = pygame.font.SysFont("Arial", 32, True)
+font_button = pygame.font.SysFont("Arial", 36, True)
+end_font = pygame.font.SysFont("Arial", 60)
+logo_font = pygame.font.SysFont("Franklin Gothic Medium", 144, True, False)
 
 # --- Логотип ---
 logo_text = "RUSTEZ"
@@ -35,14 +36,14 @@ intro_text = [
     "still fire, but most are crippled.",
     "You are Commander RYN SOLAS, armed with the NULLSTAR RIFLE",
     "this is a pulse weapon made for close combat.",
-    "Move between turrets, fight off the GRAXIDS," ,
+    "Move between turrets, fight off the GRAXIDS,",
     "and repair the damaged DEFENSES.",
-    "Repel the swarm. Repair the turrets. Protect humanity. The hunt begins..."
+    "Repel the swarm. Repair the turrets. Protect humanity. The hunt begins...",
 ]
 
 # --- Кнопка Continue ---
 button_rect = pygame.Rect(0, 0, 200, 50)
-button_rect.bottomright = (WIDTH - 50, HEIGHT - 50)
+button_rect.bottomright = (width - 50, height - 50)
 
 # --- Текстові поверхні ---
 text_surfaces = []
@@ -66,7 +67,11 @@ post_warp_fade = False
 fade_black_alpha = 0
 
 # --- Зірки (x, y, z) ---
-star_list = [(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(0.2, 1)) for _ in range(400)]
+star_list = [
+    (random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(0.2, 1))
+    for _ in range(400)
+]
+
 
 # --- Малюємо зірки ---
 def draw_stars(speed=1, warp=False):
@@ -80,13 +85,14 @@ def draw_stars(speed=1, warp=False):
             z = 1
             x, y = random.uniform(-1, 1), random.uniform(-1, 1)
 
-        sx = int(WIDTH / 2 + x / z * WIDTH / 2)
-        sy = int(HEIGHT / 2 + y / z * HEIGHT / 2)
+        sx = int(width / 2 + x / z * width / 2)
+        sy = int(height / 2 + y / z * height / 2)
         size = int((1 - z) * (10 if warp else 3))
         brightness = min(255, int(180 + (1 - z) * 180))
         color = (brightness, brightness, 255)
         pygame.draw.circle(screen, color, (sx, sy), max(size, 1))
         star_list[i] = (x, y, z)
+
 
 # --- Показ логотипу ---
 def show_logo():
@@ -98,8 +104,13 @@ def show_logo():
         if logo_alpha < 255:
             logo_alpha += 3
         logo_surf.set_alpha(logo_alpha)
-        screen.blit(logo_surf, (WIDTH//2 - logo_surf.get_width()//2,
-                                HEIGHT//2 - logo_surf.get_height()//2))
+        screen.blit(
+            logo_surf,
+            (
+                width // 2 - logo_surf.get_width() // 2,
+                height // 2 - logo_surf.get_height() // 2,
+            ),
+        )
         pygame.display.flip()
         clock.tick(75)
         logo_time += 1
@@ -109,19 +120,35 @@ def show_logo():
     while logo_alpha > 0:
         screen.fill(BLACK)
         logo_alpha -= 5
-        if logo_alpha < 0: logo_alpha = 0
+        if logo_alpha < 0:
+            logo_alpha = 0
         logo_surf.set_alpha(logo_alpha)
-        screen.blit(logo_surf, (WIDTH//2 - logo_surf.get_width()//2,
-                                HEIGHT//2 - logo_surf.get_height()//2))
+        screen.blit(
+            logo_surf,
+            (
+                width // 2 - logo_surf.get_width() // 2,
+                height // 2 - logo_surf.get_height() // 2,
+            ),
+        )
         pygame.display.flip()
         clock.tick(75)
 
+
 # --- Intro screen ---
 def intro_screen():
-    global alpha, button_phase, fade_out, fade_alpha, warp_start, warp_speed, warp_time, post_warp_fade, fade_black_alpha
+    global \
+        alpha, \
+        button_phase, \
+        fade_out, \
+        fade_alpha, \
+        warp_start, \
+        warp_speed, \
+        warp_time, \
+        post_warp_fade, \
+        fade_black_alpha
     running = True
     text_total_height = len(text_surfaces) * 50
-    base_y = HEIGHT // 2 - text_total_height // 2
+    base_y = height // 2 - text_total_height // 2
 
     while running:
         screen.fill(BLACK)
@@ -145,8 +172,8 @@ def intro_screen():
                 warp_time = time.time()
 
         for idx, surf in enumerate(text_surfaces):
-            surf.set_alpha(alpha if not fade_out else max(fade_alpha,0))
-            x = WIDTH // 2 - surf.get_width() // 2
+            surf.set_alpha(alpha if not fade_out else max(fade_alpha, 0))
+            x = width // 2 - surf.get_width() // 2
             y = base_y + idx * 50
             screen.blit(surf, (x, y))
 
@@ -156,7 +183,7 @@ def intro_screen():
         color_val = int(100 + 155 * t)
         button_color = (color_val, color_val, color_val)
         button_text = font_button.render("Continue", True, button_color)
-        button_text.set_alpha(255 if not fade_out else max(fade_alpha,0))
+        button_text.set_alpha(255 if not fade_out else max(fade_alpha, 0))
         screen.blit(button_text, button_rect.topleft)
 
         # --- Після warp → чорний екран ---
@@ -164,10 +191,10 @@ def intro_screen():
             post_warp_fade = True
         if post_warp_fade:
             fade_black_alpha = min(fade_black_alpha + 5, 255)
-            black_surface = pygame.Surface((WIDTH, HEIGHT))
+            black_surface = pygame.Surface((width, height))
             black_surface.fill(BLACK)
             black_surface.set_alpha(fade_black_alpha)
-            screen.blit(black_surface, (0,0))
+            screen.blit(black_surface, (0, 0))
 
         pygame.display.flip()
         clock.tick(75)
@@ -183,27 +210,34 @@ def intro_screen():
         if post_warp_fade and fade_black_alpha >= 255:
             running = False
 
-# --- Запуск логотипу та intro ---
-show_logo()
-intro_screen()
 
-# --- Текст бою ---
-battle_text = "Entering the battlefield..."
-battle_surf = end_font.render(battle_text, True, WHITE).convert_alpha()
-battle_alpha = 0
+if __name__ == "__main__":
+    # --- Запуск логотипу та intro ---
+    show_logo()
+    intro_screen()
 
-while battle_alpha < 255:
-    screen.fill(BLACK)
-    battle_alpha = min(battle_alpha + 3, 255)
-    battle_surf.set_alpha(battle_alpha)
-    screen.blit(battle_surf, (WIDTH//2 - battle_surf.get_width()//2,
-                              HEIGHT//2 - battle_surf.get_height()//2))
-    pygame.display.flip()
-    clock.tick(75)
+    # --- Текст бою ---
+    battle_text = "Entering the battlefield..."
+    battle_surf = end_font.render(battle_text, True, WHITE).convert_alpha()
+    battle_alpha = 0
 
-# --- Чек перед виходом ---
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    while battle_alpha < 255:
+        screen.fill(BLACK)
+        battle_alpha = min(battle_alpha + 3, 255)
+        battle_surf.set_alpha(battle_alpha)
+        screen.blit(
+            battle_surf,
+            (
+                width // 2 - battle_surf.get_width() // 2,
+                height // 2 - battle_surf.get_height() // 2,
+            ),
+        )
+        pygame.display.flip()
+        clock.tick(75)
+
+    # --- Чек перед виходом ---
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
