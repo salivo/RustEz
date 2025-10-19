@@ -203,8 +203,10 @@ def intro_screen():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN and not fade_out:
-                if button_rect.collidepoint(event.pos):
+            elif not fade_out:
+                if event.type == pygame.MOUSEBUTTONDOWN and button_rect.collidepoint(event.pos):
+                    fade_out = True
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:  # Enter
                     fade_out = True
 
         if post_warp_fade and fade_black_alpha >= 255:
