@@ -103,7 +103,7 @@ def show_logo():
         pygame.display.flip()
         clock.tick(75)
         logo_time += 1
-        if logo_time > 250:  
+        if logo_time > 250:
             showing = False
 
     while logo_alpha > 0:

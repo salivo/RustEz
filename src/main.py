@@ -6,7 +6,6 @@ import levels.level1 as lvl1
 import pygame
 from mob import Mob
 
-import mob
 from player import Player
 
 _ = pygame.init()
@@ -39,6 +38,7 @@ collide_rects: list[pygame.Rect] = []
 collide_rects += lvl1.map.createCollisionRects()
 
 running = True
+
 
 while running:
     _ = pygame.time.delay(30)
