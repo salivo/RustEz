@@ -7,15 +7,14 @@ from player import Player
 
 _ = pygame.init()
 
-# Window setup
-WIDTH, HEIGHT = 2880, 1800
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("Simple Rectangle Movement")
-
-camera = camera.Camera(WIDTH, HEIGHT)
+info = pygame.display.Info()
+width, height = info.current_w, info.current_h
+camera = camera.Camera(width, height)
 player = Player()
 # Rectangle setup
-x, y = 150, 100
+x, y = 0, 0
 width, height = 60, 40
 speed = 5
 
@@ -41,11 +40,11 @@ while running:
 
     player.update(x, y)
     camera.update(player)
-
+    print("Camera position:", player.x, player.y)
     # Drawing
     _ = screen.fill((0, 0, 0))
     draw_map(screen, camera, levels.level1.map)
-    player.draw(screen)
+    player.draw(screen, camera)
     pygame.display.update()
 
 pygame.quit()

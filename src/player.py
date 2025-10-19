@@ -1,5 +1,6 @@
 from typing import override
 import pygame
+from camera import Camera
 import entity
 
 
@@ -12,7 +13,9 @@ class Player(entity.Entity):
         self.height: int = 32
 
     @override
-    def draw(self, screen: pygame.Surface):
+    def draw(self, screen: pygame.Surface, camera: Camera):
         _ = pygame.draw.rect(
-            screen, (255, 0, 0), (self.x, self.y, self.width, self.height)
+            screen,
+            (255, 0, 0),
+            (self.x - camera.x, self.y - camera.y, self.width, self.height),
         )
