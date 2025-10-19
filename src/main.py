@@ -1,3 +1,4 @@
+from curses import KEY_DOWN, KEY_UP
 import math
 from camera import Camera
 from entity import Entity
@@ -36,35 +37,38 @@ while running:
             running = False
 
     # Key handling
-    dx, dy = 0, 0
+    direction = pygame.math.Vector2()
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        dx = -player.speed
-    if keys[pygame.K_RIGHT]:
-        dx = player.speed
     if keys[pygame.K_UP]:
-        dy = -player.speed
-    if keys[pygame.K_DOWN]:
-        dy = player.speed
-    if dx != 0 and dy != 0:
-        dx /= math.sqrt(2)
-        dy /= math.sqrt(2)
-    # player collistion
-    player.rect.x += int(dx)
+        direction.y = -1
+    elif keys[pygame.K_DOWN]:
+        direction.y = 1
+    else:
+        direction.y = 0
+    if keys[pygame.K_LEFT]:
+        direction.x = -1
+    elif keys[pygame.K_RIGHT]:
+        direction.x = 1
+    else:
+        direction.x = 0
+    if direction.magnitude() != 0:
+        direction = direction.normalize()
+    # player collision
+    player.rect.x += int(direction.x * player.speed)
     for rect in collide_rects:
         if player.rect.colliderect(rect):
-            if dx > 0:
+            if direction.x > 0:  # moving right
                 player.rect.right = rect.left
-            elif dx < 0:
+            elif direction.x < 0:  # moving left
                 player.rect.left = rect.right
 
     # Vertical
-    player.rect.y += int(dy)
+    player.rect.y += int(direction.y * player.speed)
     for rect in collide_rects:
         if player.rect.colliderect(rect):
-            if dy > 0:
+            if direction.y > 0:  # moving down
                 player.rect.bottom = rect.top
-            elif dy < 0:
+            elif direction.y < 0:  # moving up
                 player.rect.top = rect.bottom
 
     camera.update(player.rect)
