@@ -1,4 +1,4 @@
-from entity import Entity
+from pygame import Rect
 
 
 class Camera:
@@ -8,6 +8,6 @@ class Camera:
         self.x: int = 0
         self.y: int = 0
 
-    def update(self, target: Entity):
+    def update(self, target: Rect):
         self.x = target.x - self.width // 2
         self.y = target.y - self.height // 2
