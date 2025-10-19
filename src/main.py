@@ -1,11 +1,12 @@
-from curses import KEY_DOWN, KEY_UP
-import math
+import random
+
 from camera import Camera
 from entity import Entity
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
 
+import mob
 from player import Player
 
 _ = pygame.init()
@@ -17,12 +18,22 @@ width, height = info.current_w, info.current_h
 camera = Camera(width, height)
 player = Player(32, 32)
 
-mob = Mob(player)
 
 all_objects: list[Entity] = []
 all_objects += lvl1.map.createTilesArray()
 all_objects.append(player)
-all_objects.append(mob)
+
+mobs = [
+    Mob(player, random.randrange(0, 100, 10), random.randrange(0, 100, 10)),
+    Mob(player, random.randrange(0, 100, 10), random.randrange(0, 100, 10)),
+    Mob(player, random.randrange(0, 100, 10), random.randrange(0, 100, 10)),
+    # Mob(player, 10, 20),
+    # Mob(player, 20, 10),
+    # Mob(player, 30, 30),
+]
+all_objects += mobs
+# all_objects.append(mobs)
+
 
 collide_rects: list[pygame.Rect] = []
 collide_rects += lvl1.map.createCollisionRects()
@@ -73,6 +84,12 @@ while running:
 
     camera.update(player.rect)
     _ = screen.fill((0, 0, 0))
+
+    # Mobs movement
+    for obj in all_objects:
+        if isinstance(obj, Mob):
+            obj.go(player)  # вызываем нужную функцию
+
     for obj in all_objects:
         obj.draw(screen, camera)
     pygame.display.update()
