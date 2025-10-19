@@ -42,6 +42,11 @@ collide_rects += lvl1.map.createCollisionRects()
 
 running = True
 
+intro = True
+if intro:
+    print("Welcome to RustEz!")
+    print("Press Enter to start the game.")
+
 
 while running:
     _ = pygame.time.delay(30)
