@@ -5,6 +5,9 @@ from entity import Entity
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
+from globals import *
+from map import Tile
+from map import load_tiles
 
 from player import Player
 
