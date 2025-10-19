@@ -2,6 +2,7 @@ import random
 
 from camera import Camera
 from entity import Entity
+from intro import intro_screen, show_logo
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
@@ -44,8 +45,8 @@ running = True
 
 intro = True
 if intro:
-    print("Welcome to RustEz!")
-    print("Press Enter to start the game.")
+    show_logo()
+    intro_screen()
 
 
 while running:
