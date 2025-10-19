@@ -1,5 +1,5 @@
 import camera
-import levels.level1
+import levels.level1 as lvl1
 import pygame
 from mob import Mob
 import random
@@ -17,15 +17,8 @@ player = Player()
 
 mob = Mob(player)
 
-# Rectangle setup
-x, y = 0, 0
-width, height = 60, 40
-
-
 all_objects = [player]
-
-x = 0
-y = 0
+all_objects += lvl1.map.createTilesArray()
 running = True
 while running:
     _ = pygame.time.delay(30)
@@ -37,13 +30,13 @@ while running:
     # Key handling
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        player.x -= speed
+        player.x -= player.speed
     if keys[pygame.K_RIGHT]:
-        player.x += speed
+        player.x += player.speed
     if keys[pygame.K_UP]:
-        player.y -= speed
+        player.y -= player.speed
     if keys[pygame.K_DOWN]:
-        player.y += speed
+        player.y += player.speed
 
     camera.update(player)
     # Drawing

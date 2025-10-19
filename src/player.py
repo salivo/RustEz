@@ -11,9 +11,10 @@ class Player(entity.Entity):
         self.y: int = 0
         self.width: int = 32
         self.height: int = 32
+        self.speed: int = 5
 
     @override
-    def draw(self, screen: pygame.Surface, camera: Camera):
+    def draw(self, screen: pygame.Surface, camera: Camera):  # pyright: ignore[reportIncompatibleMethodOverride]
         _ = pygame.draw.rect(
             screen,
             (0, 0, 255),
