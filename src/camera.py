@@ -2,7 +2,7 @@ from entity import Entity
 
 
 class Camera:
-    def __init__(self, width, height):
+    def __init__(self, width: int, height: int):
         self.width: int = width
         self.height: int = height
         self.x: int = 0
