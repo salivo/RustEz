@@ -187,7 +187,7 @@ def intro_screen():
         screen.blit(button_text, button_rect.topleft)
 
         # --- Після warp → чорний екран ---
-        if warp_start and time.time() - warp_time > 3:
+        if warp_start and time.time() - warp_time > 1.5:
             post_warp_fade = True
         if post_warp_fade:
             fade_black_alpha = min(fade_black_alpha + 5, 255)
