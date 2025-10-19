@@ -1,8 +1,8 @@
 import camera
+from entity import Entity
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
-import random
 
 from player import Player
 
@@ -17,8 +17,11 @@ player = Player()
 
 mob = Mob(player)
 
-all_objects = [player]
+all_objects: list[Entity] = []
 all_objects += lvl1.map.createTilesArray()
+all_objects.append(player)
+all_objects.append(mob)
+
 running = True
 while running:
     _ = pygame.time.delay(30)
