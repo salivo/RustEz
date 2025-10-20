@@ -16,6 +16,7 @@ from mob import Mob
 from outro import game_over_screen
 from player import Player
 from turret import Turret
+from tutorialcomp import tutorial_complete_screen
 
 if SHOW_INTRO:
     from intro import init_intro, intro_screen, show_logo
@@ -41,7 +42,9 @@ bigrunning = True
 
 
 def main():
-    mission = [False, False]
+    global win
+    win = False
+    mission: list[bool] = [False, False]
     mission_count = 0
     conditions = [False, False, False]
     global bigrunning
@@ -209,11 +212,18 @@ def main():
         pygame.display.flip()
         _ = clock.tick(60)
 
+        if False not in mission:
+            running = False
+            win = True
+
 
 while bigrunning:
     main()
     if not bigrunning:
         break
-    _ = game_over_screen()
+    if win:
+        _ = tutorial_complete_screen()
+    else:
+        _ = game_over_screen()
 
 pygame.quit()
