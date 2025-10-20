@@ -11,7 +11,7 @@ class Info(Entity):
         x: int = 0,
         y: int = 0,
         show: bool = False,
-        message: str = "Gerniggerniggernig",
+        message: str = "NIGGA MUEHEHEHEH NIGGA MUEHEHEHEH NIGGA MUEHEHEHEH NIGGA MUEHEHEHEH NIGGA MUEHEHEHEH NIGGA MUEHEHEHEH NIGGA MUEHEHEHEH",
     ):
         super().__init__(x, y)
         self.rect: pygame.Rect = pygame.Rect(0, 0, 96, 96)
@@ -21,14 +21,11 @@ class Info(Entity):
 
     def draw(self, screen: pygame.Surface, camera: Camera):
         if self.show:
-            _ = pygame.draw.rect(
-                screen,
-                (255, 0, 0),
-                rect=self.rect.move(-camera.x, -camera.y),
-            )
+            # Adjust the rect position based on camera offset and offset it further
             draw_rect = self.rect.move(-camera.x, -camera.y)
-            draw_rect.centerx += 80  # Offset by 40 pixels on X-axis
-            draw_rect.centery -= 80
+            draw_rect.centerx += 80  # Offset by 80 pixels on X-axis
+            draw_rect.centery -= 80  # Offset by 80 pixels on Y-axis
+            draw_rect.width = 300  # Set the width to 300
 
             # Dark, semi-transparent background (using RGBA for transparency)
             popup_color = (60, 40, 100)  # A darker purple background
@@ -43,7 +40,7 @@ class Info(Entity):
             )  # Darker shadow color
 
             # White border around the pop-up (lighter border color)
-            border_thickness = 4
+            border_thickness = 1
             pygame.draw.rect(
                 screen,
                 (255, 255, 255),
@@ -53,9 +50,38 @@ class Info(Entity):
             )
 
             # Render the message inside the pop-up
-            font = pygame.font.Font(None, 32)  # Slightly smaller font for readability
-            text = font.render(self.message, True, (255, 255, 255))  # White text
-            text_rect = text.get_rect(
-                center=draw_rect.center
-            )  # Center the text in the pop-up
-            screen.blit(text, text_rect)
+            font = pygame.font.Font(None, 17)  # Slightly smaller font for readability
+            wrapped_text = self.wrap_text(
+                self.message, font, draw_rect.width - 20
+            )  # Wrap the text
+
+            # Draw the wrapped text starting from the top-left corner with padding
+            y_offset = (
+                draw_rect.top + 10
+            )  # Start from the top of the pop-up with padding
+            for line in wrapped_text:
+                text = font.render(line, True, (255, 255, 255))  # White text
+                text_rect = text.get_rect(
+                    topleft=(draw_rect.left + 10, y_offset)
+                )  # Place text with padding
+                screen.blit(text, text_rect)  # Blit the text
+                y_offset += font.get_height()  # Move down for the next line
+
+    def wrap_text(self, text: str, font: pygame.font.Font, max_width: int) -> list[str]:
+        """Wrap text to fit within a given width."""
+        words = text.split(" ")
+        lines = []
+        current_line = ""
+
+        for word in words:
+            # Check if the word can fit in the current line
+            if font.size(current_line + " " + word)[0] <= max_width:
+                current_line += " " + word if current_line else word
+            else:
+                # If the word doesn't fit, push the current line to the list and start a new line
+                lines.append(current_line)
+                current_line = word  # Start new line with the current word
+        if current_line:
+            lines.append(current_line)  # Add the last line
+
+        return lines
