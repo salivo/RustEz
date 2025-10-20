@@ -1,7 +1,15 @@
 import random
 from camera import Camera
 from entity import Entity
-from globals import SHOW_INTRO, ZOOM_SCALE, global_assets
+from globals import (
+    SHOW_INTRO,
+    ZOOM_SCALE,
+    global_assets,
+    NUM_MOBS,
+    MOB_SPAWN_DOT_X,
+    MOB_SPAWN_DOT_Y,
+    MOB_VISION_RANGE,
+)
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
@@ -27,12 +35,8 @@ all_objects += lvl1.map.createTilesArray()
 all_objects.append(player)
 
 mobs = [
-    Mob(player, random.randrange(0, 100, 10), random.randrange(0, 100, 10)),
-    Mob(player, random.randrange(0, 100, 10), random.randrange(0, 100, 10)),
-    Mob(player, random.randrange(0, 100, 10), random.randrange(0, 100, 10)),
-    # Mob(player, 10, 20),
-    # Mob(player, 20, 10),
-    # Mob(player, 30, 30),
+    Mob(player, random.randrange(-100, 100), random.randrange(-100, 100))
+    for _ in range(NUM_MOBS)
 ]
 all_objects += mobs
 # all_objects.append(mobs)
@@ -104,13 +108,18 @@ while running:
     _ = world_surface.fill((0, 0, 0))
 
     # Mobs movement
-    for obj in all_objects:
-        if isinstance(obj, Mob):
-            obj.go(player)  # вызываем нужную функцию
+    # for obj in all_objects:
+    #     if isinstance(obj, Mob):
+    #         obj.update(player)  # вызываем нужную функцию
 
     for obj in all_objects:
-        obj.update()
+        if obj not in mobs:
+            obj.update()
         obj.draw(world_surface, camera)
+
+    for mob in mobs:
+        mob.update(player, mobs)
+
     scaled_surface = pygame.transform.scale(world_surface, (width, height))
     _ = screen.blit(scaled_surface, (0, 0))
     pygame.display.flip()
