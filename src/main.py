@@ -28,12 +28,9 @@ if not pygame.mixer.get_init():
 # --- Display setup ---
 info = pygame.display.Info()
 width, height = info.current_w, info.current_h
-<<<<<<< Updated upstream
 screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
 pygame.display.set_caption("RustEz")
-=======
 conditions = [False, False, False, False, False]
->>>>>>> Stashed changes
 
 if SHOW_INTRO:
     init_intro(screen, width, height)  # pyright: ignore[reportPossiblyUnboundVariable]
