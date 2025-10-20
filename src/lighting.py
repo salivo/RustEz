@@ -14,7 +14,8 @@ def light_circle(overlay, center_px, radius_px, soft_edges=True):
     """Each frame: clears a circular ‘hole’ in the overlay at center_px."""
     cx, cy = map(int, center_px)
     if soft_edges:
-        steps = max(8, radius_px // 6)
+        steps = max(128, radius_px // 1)
+
         for i in range(steps, 0, -1):
             r = int(radius_px * i / steps)
             a = int(OVERLAY_ALPHA * (i - 1) / steps)  # fade to full dark
