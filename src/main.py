@@ -43,16 +43,9 @@ collide_rects += lvl1.map.createCollisionRects()
 
 running = True
 
-<<<<<<< HEAD
-intro = False
-if intro:
-    show_logo()
-    intro_screen()
-=======
 if SHOW_INTRO:
     show_logo()  # pyright: ignore[reportPossiblyUnboundVariable]
     intro_screen()  # pyright: ignore[reportPossiblyUnboundVariable]
->>>>>>> cfbffc8 (Improved map visualization, added zoom)
 
 
 world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
