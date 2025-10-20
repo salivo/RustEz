@@ -19,6 +19,7 @@ if SHOW_INTRO:
 
 
 _ = pygame.init()
+pygame.mixer.init()
 
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("RustEz")
@@ -134,7 +135,9 @@ while running:
         mob.update(player, mobs)  # pyright: ignore[reportUnknownMemberType]
 
     for bullet in bullets:
-        bullet.update()
+        bullet.update(collide_rects)
+        if bullet.should_remove:
+            bullets.remove(bullet)
         bullet.draw(world_surface, camera)
 
     scaled_surface = pygame.transform.scale(world_surface, (width, height))

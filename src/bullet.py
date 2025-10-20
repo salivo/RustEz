@@ -2,7 +2,7 @@ import math
 from typing import override
 import pygame
 from entity import Entity
-from globals import BULLET_SPEED
+from globals import BULLET_SPEED, global_assets
 
 MAGIC_X = 10
 MAGIC_Y = 19
@@ -18,9 +18,11 @@ class Bullet(Entity):
         self.angle: float = angle
         self.speed: float = BULLET_SPEED
         self.player_velocity: pygame.Vector2 = player_velocity
+        self.should_remove: bool = False
+        _ = global_assets.shot_sound.play()
 
     @override
-    def update(self):
+    def update(self, collide_rects: list[pygame.Rect]):  # pyright: ignore[reportIncompatibleMethodOverride]
         move_vec = (
             pygame.Vector2(
                 math.cos(math.radians(self.angle)), -math.sin(math.radians(self.angle))
@@ -30,3 +32,7 @@ class Bullet(Entity):
         move_vec += self.player_velocity
         self.pos += move_vec
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
+        for rect in collide_rects:
+            if self.rect.colliderect(rect):
+                self.should_remove = True
+                pass
