@@ -1,4 +1,5 @@
 import random
+from bullet import Bullet
 from camera import Camera
 from entity import Entity
 from globals import (
@@ -6,9 +7,6 @@ from globals import (
     ZOOM_SCALE,
     global_assets,
     NUM_MOBS,
-    MOB_SPAWN_DOT_X,
-    MOB_SPAWN_DOT_Y,
-    MOB_VISION_RANGE,
 )
 import levels.level1 as lvl1
 import pygame
@@ -41,6 +39,7 @@ mobs = [
 all_objects += mobs
 # all_objects.append(mobs)
 
+bullets: list[Bullet] = []
 
 collide_rects: list[pygame.Rect] = []
 collide_rects += lvl1.map.createCollisionRects()
@@ -57,25 +56,21 @@ world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
 clock = pygame.time.Clock()
 
 while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
     # Key handling
     direction = pygame.math.Vector2()
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:  # game quit
         running = False
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_w]:
         direction.y = -1
-    elif keys[pygame.K_DOWN]:
+    elif keys[pygame.K_s]:
         direction.y = 1
     else:
         direction.y = 0
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_a]:
         direction.x = -1
         player.side = "left"
-    elif keys[pygame.K_RIGHT]:
+    elif keys[pygame.K_d]:
         direction.x = 1
         player.side = "right"
     else:
@@ -86,7 +81,21 @@ while running:
     else:
         player.state = "idle"
 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # pyright: ignore[reportAny]
+            bullets.append(
+                Bullet(
+                    player.rect.x,
+                    player.rect.y,
+                    player.gun_angle,
+                    direction * player.speed,
+                )
+            )
+
     # player collision
+    # Horizontal
     player.rect.x += int(direction.x * player.speed)
     for rect in collide_rects:
         if player.rect.colliderect(rect):
@@ -94,7 +103,6 @@ while running:
                 player.rect.right = rect.left
             elif direction.x < 0:  # moving left
                 player.rect.left = rect.right
-
     # Vertical
     player.rect.y += int(direction.y * player.speed)
     for rect in collide_rects:
@@ -107,18 +115,17 @@ while running:
     camera.update(player.rect)
     _ = world_surface.fill((0, 0, 0))
 
-    # Mobs movement
-    # for obj in all_objects:
-    #     if isinstance(obj, Mob):
-    #         obj.update(player)  # вызываем нужную функцию
-
     for obj in all_objects:
         if obj not in mobs:
             obj.update()
         obj.draw(world_surface, camera)
 
     for mob in mobs:
-        mob.update(player, mobs)
+        mob.update(player, mobs)  # pyright: ignore[reportUnknownMemberType]
+
+    for bullet in bullets:
+        bullet.update()
+        bullet.draw(world_surface, camera)
 
     scaled_surface = pygame.transform.scale(world_surface, (width, height))
     _ = screen.blit(scaled_surface, (0, 0))
