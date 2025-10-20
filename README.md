@@ -1,6 +1,7 @@
 # RustEz
 
 What you need to install:
+
 python -m venv env
 
 source env/bin/activate
