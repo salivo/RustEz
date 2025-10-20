@@ -32,7 +32,9 @@ def get_neighbors(grid, x: int, y: int):
     neighbors = []
     for dy, dx in directions:
         ny, nx = y + dy, x + dx
-        if 0 <= ny < rows and 0 <= nx < cols:
+        if grid[y][x] == 1:
+            neighbors.append(0)
+        elif 0 <= ny < rows and 0 <= nx < cols:
             neighbors.append(simplifywall(grid[ny][nx]))
         else:
             neighbors.append(1)
