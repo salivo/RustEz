@@ -3,7 +3,7 @@ from bullet import Bullet
 from camera import Camera
 from entity import Entity
 from hearts import showhearts
-from info import Info
+from info import Info, drawTextBox
 from globals import (
     SHOW_INTRO,
     ZOOM_SCALE,
@@ -28,8 +28,12 @@ if not pygame.mixer.get_init():
 # --- Display setup ---
 info = pygame.display.Info()
 width, height = info.current_w, info.current_h
+<<<<<<< Updated upstream
 screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
 pygame.display.set_caption("RustEz")
+=======
+conditions = [False, False, False, False, False]
+>>>>>>> Stashed changes
 
 if SHOW_INTRO:
     init_intro(screen, width, height)  # pyright: ignore[reportPossiblyUnboundVariable]
@@ -76,14 +80,18 @@ def main():
             bigrunning = False
         if keys[pygame.K_w]:
             direction.y = -1
+            conditions[0] = True
         elif keys[pygame.K_s]:
             direction.y = 1
+            conditions[1] = True
         else:
             direction.y = 0
         if keys[pygame.K_a]:
+            conditions[2] = True
             direction.x = -1
             player.side = "left"
         elif keys[pygame.K_d]:
+            conditions[3] = True
             direction.x = 1
             player.side = "right"
         else:
@@ -99,6 +107,7 @@ def main():
                 running = False
                 bigrunning = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # pyright: ignore[reportAny]
+                conditions[4] = True
                 bullets.append(
                     Bullet(
                         player.rect.x,
@@ -156,6 +165,18 @@ def main():
         player.draw(world_surface, camera)
         if player.health <= 0:
             running = False
+        if False in conditions:
+            drawTextBox(
+                pygame.Rect((width - 800) / ZOOM_SCALE, 100, 400, 140),
+                world_surface,
+                """Movement:
+                    - W-up,
+                    - A-left,
+                    - S-down,
+                    - D-right,
+                    - MouseClick-shoot
+                """,
+            )
         scaled_surface = pygame.transform.scale(world_surface, (width, height))
         _ = screen.blit(scaled_surface, (0, 0))
 
