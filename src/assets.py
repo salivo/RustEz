@@ -4,9 +4,11 @@ import pygame
 class Assets:
     player: list[pygame.Surface] = []
     ground: list[pygame.Surface] = []
+    gun: list[pygame.Surface] = []
 
     def load(self):
         self.player = self._load_spritesheet("assets/player.png", 32, 32)
+        self.gun = self._load_spritesheet("assets/gun.png", 32, 32)
 
     def _load_spritesheet(
         self, path: str, tile_w: int, tile_h: int
