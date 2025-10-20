@@ -2,15 +2,15 @@ import random
 
 from camera import Camera
 from entity import Entity
-from intro import intro_screen, show_logo
+from globals import SHOW_INTRO, ZOOM_SCALE
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
-from globals import *
-from map import Tile
-from map import load_tiles
-
 from player import Player
+
+if SHOW_INTRO:
+    from intro import intro_screen, show_logo
+
 
 _ = pygame.init()
 
@@ -19,7 +19,7 @@ pygame.display.set_caption("RustEz")
 info = pygame.display.Info()
 width, height = info.current_w, info.current_h
 camera = Camera(width, height)
-player = Player(32, 32)
+player = Player(100, 100)
 
 
 all_objects: list[Entity] = []
@@ -43,11 +43,19 @@ collide_rects += lvl1.map.createCollisionRects()
 
 running = True
 
+<<<<<<< HEAD
 intro = False
 if intro:
     show_logo()
     intro_screen()
+=======
+if SHOW_INTRO:
+    show_logo()  # pyright: ignore[reportPossiblyUnboundVariable]
+    intro_screen()  # pyright: ignore[reportPossiblyUnboundVariable]
+>>>>>>> cfbffc8 (Improved map visualization, added zoom)
 
+
+world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
 
 while running:
     _ = pygame.time.delay(30)
@@ -95,7 +103,7 @@ while running:
                 player.rect.top = rect.bottom
 
     camera.update(player.rect)
-    _ = screen.fill((0, 0, 0))
+    _ = world_surface.fill((0, 0, 0))
 
     # Mobs movement
     for obj in all_objects:
@@ -103,7 +111,9 @@ while running:
             obj.go(player)  # вызываем нужную функцию
 
     for obj in all_objects:
-        obj.draw(screen, camera)
+        obj.draw(world_surface, camera)
+    scaled_surface = pygame.transform.scale(world_surface, (width, height))
+    _ = screen.blit(scaled_surface, (0, 0))
     pygame.display.update()
 
 pygame.quit()

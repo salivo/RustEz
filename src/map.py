@@ -26,10 +26,12 @@ class Tile(Entity):
     @override
     def draw(self, screen: pygame.Surface, camera: pygame.Rect):  # pyright: ignore[reportIncompatibleMethodOverride]
         if self.tile_type == 0:
+            return
+        if self.tile_type == 1:
             screen.blit(self.tileset[0], self.rect.move(-camera.x, -camera.y))
-        elif self.tile_type == 1:
-            screen.blit(self.tileset[1], self.rect.move(-camera.x, -camera.y))
         elif self.tile_type == 2:
+            screen.blit(self.tileset[1], self.rect.move(-camera.x, -camera.y))
+        elif self.tile_type == 3:
             screen.blit(self.tileset[2], self.rect.move(-camera.x, -camera.y))
         else:
             pygame.draw.rect(
@@ -53,7 +55,7 @@ class Map:
         collide_rects: list[pygame.Rect] = []
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
-                if tile == 1:
+                if tile == 2:
                     collide_rects.append(
                         pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                     )
