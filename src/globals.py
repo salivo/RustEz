@@ -17,4 +17,7 @@ MOB_SPAWN_DOT_Y = 100, 100
 
 BULLET_SPEED = 10
 
+LIGHT_RADIUS_PX = 9
+SOFT_EDGES = True
+OVERLAY_ALPHA = 180
 global_assets = Assets()
