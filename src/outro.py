@@ -11,12 +11,10 @@ clock = pygame.time.Clock()
 
 # --- Кольори ---
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
-D_WHITE = (100, 100, 100)
 OVERLAY = (0, 0, 0, 180)
-BUTTON_COLOR = (50,50, 0)
-BUTTON_HOVER_COLOR = (30, 30, 0)  # темніший при наведенні
+BUTTON_COLOR = (50, 50, 0)
+BUTTON_HOVER_COLOR = (30, 30, 0)
 BUTTON_BORDER = (255, 255, 0)
 BUTTON_TEXT_COLOR = (255, 255, 0)
 
@@ -24,13 +22,28 @@ BUTTON_TEXT_COLOR = (255, 255, 0)
 font = pygame.font.SysFont("Franklin Gothic Medium", 120, True)
 button_font = pygame.font.SysFont("Arial", 28, True)
 
+def draw_button(text, rect, alpha, hover):
+    """Малює кнопку з рамкою та текстом"""
+    button_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+    color = (BUTTON_HOVER_COLOR if hover else BUTTON_COLOR) + (alpha,)
+    border = BUTTON_BORDER + (alpha,)
+
+    pygame.draw.rect(button_surface, color, (0, 0, rect.width, rect.height), border_radius=10)
+    pygame.draw.rect(button_surface, border, (0, 0, rect.width, rect.height), 4, border_radius=10)
+
+    text_render = button_font.render(text, True, BUTTON_TEXT_COLOR)
+    text_rect = text_render.get_rect(center=(rect.width//2, rect.height//2))
+    button_surface.blit(text_render, text_rect)
+
+    screen.blit(button_surface, rect.topleft)
+
 def game_over_screen():
     text_surface = font.render("GAME OVER", True, YELLOW)
     outline = pygame.Surface((text_surface.get_width()+4, text_surface.get_height()+4), pygame.SRCALPHA)
-    for dx in [-2,0,2]:
-        for dy in [-2,0,2]:
-            outline.blit(font.render("GAME OVER", True, (0,0,0)), (dx+2, dy+2))
-    outline.blit(text_surface, (2,2))
+    for dx in [-2, 0, 2]:
+        for dy in [-2, 0, 2]:
+            outline.blit(font.render("GAME OVER", True, (0, 0, 0)), (dx+2, dy+2))
+    outline.blit(text_surface, (2, 2))
 
     y = -text_surface.get_height()
     target_y = HEIGHT // 2 - text_surface.get_height() // 2
@@ -39,22 +52,18 @@ def game_over_screen():
     max_bounces = 3
     damping = 0.5
 
-    button_radius = 80
-    button_center = [WIDTH//2, target_y + text_surface.get_height() + 150]
+    # --- Кнопки ---
+    button_size = (260, 80)
+    restart_rect = pygame.Rect(WIDTH//2 - button_size[0]//2, target_y + text_surface.get_height() + 150, *button_size)
+    quit_rect = pygame.Rect(WIDTH//2 - button_size[0]//2, restart_rect.bottom + 40, *button_size)
+
     button_alpha = 0
     button_fade_speed = 5
-    button_surface = pygame.Surface((button_radius*2, button_radius*2), pygame.SRCALPHA)
-    button_bounce = 0
-    button_velocity = 0
-    button_target_y = button_center[1]
-
-    # --- Для поступового затемнення ---
     overlay_alpha = 0
     overlay_max = 180
-
     restart_clicked = False
 
-    while not restart_clicked:
+    while True:
         screen.fill(BLACK)
 
         # --- Поступове затемнення ---
@@ -62,7 +71,7 @@ def game_over_screen():
             overlay_alpha += 3
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, overlay_alpha))
-        screen.blit(overlay, (0,0))
+        screen.blit(overlay, (0, 0))
 
         # --- Анімація GAME OVER ---
         y += velocity
@@ -75,40 +84,25 @@ def game_over_screen():
                 y = target_y
         else:
             velocity += 1
+
         screen.blit(outline, (WIDTH//2 - outline.get_width()//2, int(y)))
 
-        # --- Кнопка ---
+        # --- Кнопки після зупинки ---
         if velocity == 0 and overlay_alpha >= overlay_max:
             if button_alpha < 255:
                 button_alpha += button_fade_speed
 
-            if button_bounce < 4:
-                button_velocity += 1
-                button_center[1] += button_velocity
-                if button_center[1] >= button_target_y:
-                    button_center[1] = button_target_y
-                    button_velocity = -button_velocity * 0.5
-                    button_bounce += 1
-
             mx, my = pygame.mouse.get_pos()
-            dx = mx - button_center[0]
-            dy = my - button_center[1]
-            if dx*dx + dy*dy <= button_radius*button_radius:
-                color = BUTTON_HOVER_COLOR + (button_alpha,)
-            else:
-                color = BUTTON_COLOR + (button_alpha,)
+            hover_restart = restart_rect.collidepoint(mx, my)
+            hover_quit = quit_rect.collidepoint(mx, my)
 
-            button_surface.fill((0,0,0,0))
-            pygame.draw.circle(button_surface, color, (button_radius, button_radius), button_radius)
-            pygame.draw.circle(button_surface, BUTTON_BORDER + (button_alpha,), (button_radius, button_radius), button_radius, 4)
-            text_btn = button_font.render("RESTART", True, BUTTON_TEXT_COLOR)
-            text_rect = text_btn.get_rect(center=(button_radius, button_radius))
-            button_surface.blit(text_btn, text_rect)
-            screen.blit(button_surface, (button_center[0]-button_radius, button_center[1]-button_radius))
+            draw_button("RESTART", restart_rect, button_alpha, hover_restart)
+            draw_button("QUIT", quit_rect, button_alpha, hover_quit)
 
         pygame.display.flip()
         clock.tick(75)
 
+        # --- Події ---
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -117,14 +111,11 @@ def game_over_screen():
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN and velocity == 0 and overlay_alpha >= overlay_max:
-                mx, my = event.pos
-                dx = mx - button_center[0]
-                dy = my - button_center[1]
-                if dx*dx + dy*dy <= button_radius*button_radius:
-                    restart_clicked = True
-
-    return True
-
+                if restart_rect.collidepoint(event.pos):
+                    return True
+                elif quit_rect.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
 
 def main():
     running = True
