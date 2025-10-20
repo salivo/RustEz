@@ -18,12 +18,13 @@ def load_tiles(path: str, size: int):
 
 
 class Tile(Entity):
-    def __init__(self, x: int, y: int, tile_type: int):
+    def __init__(self, x: int, y: int, tile_type: int, tile_style: int):
         super().__init__()
         self.rect: pygame.Rect = pygame.Rect(
             x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE
         )
         self.tile_type: int = tile_type
+        self.tile_style: int = tile_style
 
     @override
     def draw(self, screen: pygame.Surface, camera: pygame.Rect):  # pyright: ignore[reportIncompatibleMethodOverride]
@@ -31,7 +32,7 @@ class Tile(Entity):
             return
         try:
             _ = screen.blit(
-                global_assets.ground[self.tile_type - 1],
+                global_assets.ground[self.tile_style],
                 self.rect.move(-camera.x, -camera.y),
             )
         except Exception:
@@ -49,7 +50,7 @@ class Map:
         tiles: list[Tile] = []
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
-                tiles.append(Tile(x, y, tile))
+                tiles.append(Tile(x, y, tile, 0))
         return tiles
 
     def createCollisionRects(self):
