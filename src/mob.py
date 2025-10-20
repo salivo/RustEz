@@ -15,6 +15,7 @@ class Mob(entity.Entity):
         self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
         self.pos = pygame.Vector2(self.rect.center)
         self.vel = pygame.Vector2(0, 0)
+        self.cooldown: int = 0
 
     # def rangeToPlayer(self, player: Player):
     #     return math.sqrt(
@@ -62,6 +63,8 @@ class Mob(entity.Entity):
     # ---- Совместимая сигнатура ----
     def update(self, *args, **kwargs):
         # пытаемся получить player и mobs из позиционных или ключевых аргументов
+        if self.health <= 0:
+            self.should_remove: bool = True
         player = None
         mobs = None
 
@@ -71,7 +74,7 @@ class Mob(entity.Entity):
             mobs = args[1]
 
         # или из kwargs
-        player = kwargs.get("player", player)
+        player: Player = kwargs.get("player", player)
         mobs = kwargs.get("mobs", mobs)
 
         # поведение
@@ -82,6 +85,13 @@ class Mob(entity.Entity):
         self.pos += self.vel
         self.rect.center = (int(self.pos.x), int(self.pos.y))
         self.vel *= 0.9
+
+        if player.rect.colliderect(self.rect):
+            if self.cooldown >= 0:
+                self.cooldown -= 1
+            else:
+                player.health -= 20
+                self.cooldown = 100
 
         @override
         def draw(self, screen: pygame.Surface, camera: Camera):

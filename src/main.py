@@ -32,7 +32,6 @@ global_assets.load()
 
 all_objects: list[Entity] = []
 all_objects += lvl1.map.createTilesArray()
-all_objects.append(player)
 
 mobs = [
     Mob(player, random.randrange(-100, 100), random.randrange(-100, 100))
@@ -133,13 +132,19 @@ while running:
 
     for mob in mobs:
         mob.update(player, mobs)  # pyright: ignore[reportUnknownMemberType]
+        if mob.should_remove:
+            mobs.remove(mob)
 
     for bullet in bullets:
-        bullet.update(collide_rects)
+        bullet.update(collide_rects, mobs)
         if bullet.should_remove:
             bullets.remove(bullet)
         bullet.draw(world_surface, camera)
 
+    player.update()
+    player.draw(world_surface, camera)
+    if player.health <= 0:
+        running = False
     scaled_surface = pygame.transform.scale(world_surface, (width, height))
     _ = screen.blit(scaled_surface, (0, 0))
     pygame.display.flip()
