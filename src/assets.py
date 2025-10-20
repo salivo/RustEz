@@ -7,6 +7,7 @@ class Assets:
     gun: list[pygame.Surface] = []
     shot_sound: pygame.mixer.Sound | None = None
     hearts: list[pygame.Surface] = []
+    beetles: list[pygame.Surface] = []
 
     def load(self):
         self.player = self._load_spritesheet("assets/player.png", 32, 32)
@@ -14,6 +15,7 @@ class Assets:
         self.ground = self._load_spritesheet("assets/ground.png", 32, 32)
         self.shot_sound = pygame.mixer.Sound("assets/shot_sound.mp3")
         self.hearts = self._load_spritesheet("assets/hearts.png", 16, 16)
+        self.beetles = self._load_spritesheet("assets/beetle.png", 32, 32)
 
     def _load_spritesheet(
         self, path: str, tile_w: int, tile_h: int

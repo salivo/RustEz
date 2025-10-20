@@ -10,6 +10,7 @@ from globals import (
     TILE_SIZE,
     COLLISION_RADIUS,
     MOB_VISION_RANGE,
+    global_assets,
 )
 import random
 
@@ -22,14 +23,16 @@ class Mob(entity.Entity):
         self.pos = pygame.Vector2(self.rect.center)
         self.vel = pygame.Vector2(0, 0)
         self.cooldown: int = 0
+        self.image_count: int = 0
+        self.frame: float = 0
+        self.animation_speed: float = 0.1
+        self.angle_to_player: float = 0
 
-    # def rangeToPlayer(self, player: Player):
-    #     return math.sqrt(
-    #         math.pow((player.rect.x - self.rect.x), 2)
-    #         + math.pow((player.rect.y - self.rect.y), 2)
-    #     )
+    def getAngleToPlayer(self, player: Player) -> float:
+        dx = player.rect.centerx - self.rect.centerx
+        dy = player.rect.centery - self.rect.centery
+        return math.degrees(math.atan2(dy, dx))
 
-    # @override
     def move_towards_player(self, player):
         if player is None:
             return
@@ -85,14 +88,19 @@ class Mob(entity.Entity):
                 player.health -= MOB_BITE_DAMAGE
                 self.cooldown = 50
         self.cooldown -= 1
+        frame_count = 4
+        if self.frame >= frame_count:
+            self.frame = 0
+        self.image_count = int(self.frame)
+        self.frame += self.animation_speed
+
+        # update angle
+        self.angle_to_player = self.getAngleToPlayer(player)
 
     @override
     def draw(self, screen: pygame.Surface, camera: Camera):
-        _ = pygame.draw.rect(
-            screen,
-            (0, 0, 255),
-            self.rect.move(-camera.x, -camera.y),
+        rotated_image = pygame.transform.rotate(
+            global_assets.beetles[self.image_count], -self.angle_to_player + 90
         )
-
-
-# def
+        rect = rotated_image.get_rect(center=self.rect.center)
+        _ = screen.blit(rotated_image, rect.move(-camera.x, -camera.y))
