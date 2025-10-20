@@ -13,3 +13,6 @@ class Entity:
             (255, 0, 0),
             rect=self.rect.move(-camera.x, -camera.y),
         )
+
+    def update(self):
+        pass

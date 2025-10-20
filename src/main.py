@@ -1,8 +1,7 @@
 import random
-
 from camera import Camera
 from entity import Entity
-from globals import SHOW_INTRO, ZOOM_SCALE
+from globals import SHOW_INTRO, ZOOM_SCALE, global_assets
 import levels.level1 as lvl1
 import pygame
 from mob import Mob
@@ -21,6 +20,7 @@ width, height = info.current_w, info.current_h
 camera = Camera(width, height)
 player = Player(100, 100)
 
+global_assets.load()
 
 all_objects: list[Entity] = []
 all_objects += lvl1.map.createTilesArray()
@@ -50,9 +50,9 @@ if SHOW_INTRO:
 
 world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
 
-while running:
-    _ = pygame.time.delay(30)
+clock = pygame.time.Clock()
 
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -62,7 +62,6 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:  # game quit
         running = False
-
     if keys[pygame.K_UP]:
         direction.y = -1
     elif keys[pygame.K_DOWN]:
@@ -71,12 +70,18 @@ while running:
         direction.y = 0
     if keys[pygame.K_LEFT]:
         direction.x = -1
+        player.side = "left"
     elif keys[pygame.K_RIGHT]:
         direction.x = 1
+        player.side = "right"
     else:
         direction.x = 0
     if direction.magnitude() != 0:
         direction = direction.normalize()
+        player.state = "run"
+    else:
+        player.state = "idle"
+
     # player collision
     player.rect.x += int(direction.x * player.speed)
     for rect in collide_rects:
@@ -104,9 +109,10 @@ while running:
             obj.go(player)  # вызываем нужную функцию
 
     for obj in all_objects:
+        obj.update()
         obj.draw(world_surface, camera)
     scaled_surface = pygame.transform.scale(world_surface, (width, height))
     _ = screen.blit(scaled_surface, (0, 0))
-    pygame.display.update()
-
+    pygame.display.flip()
+    _ = clock.tick(60)
 pygame.quit()
