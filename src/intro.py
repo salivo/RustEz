@@ -4,6 +4,7 @@ import random
 import time
 
 pygame.init()
+pygame.mixer.init()
 
 # --- Екран ---
 info = pygame.display.Info()
@@ -146,18 +147,32 @@ def intro_screen():
         warp_time, \
         post_warp_fade, \
         fade_black_alpha
+
+    # --- Фонова музика ---
+    pygame.mixer.music.load("assets/intro_music.mp3")
+    pygame.mixer.music.set_volume(0.8)
+    pygame.mixer.music.play(-1)
+
+    # --- Звук варпу ---
+    warp_sound = pygame.mixer.Sound("assets/warp_sound.mp3")
+    warp_channel = pygame.mixer.Channel(1)
+    warp_channel.set_volume(0.0)
+
     running = True
     text_total_height = len(text_surfaces) * 50
     base_y = height // 2 - text_total_height // 2
 
+    warp_duration = 1.1 # скільки триває warp
+    warp_playing = False
+
     while running:
         screen.fill(BLACK)
+
+        # --- Зірки ---
         if warp_start:
             draw_stars(speed=warp_speed, warp=True)
             if warp_speed < MAX_WARP_SPEED:
                 warp_speed += warp_acceleration
-                if warp_speed > MAX_WARP_SPEED:
-                    warp_speed = MAX_WARP_SPEED
         else:
             draw_stars(speed=1, warp=False)
 
@@ -166,18 +181,35 @@ def intro_screen():
             alpha = min(alpha + 2, 255)
         else:
             fade_alpha -= 20
+            # поступове зниження гучності інтро
+            current_volume = pygame.mixer.music.get_volume()
+            pygame.mixer.music.set_volume(max(0, current_volume - 0.02))
+
+            # коли текст зник — стартує warp
             if fade_alpha <= 0 and not warp_start:
                 warp_start = True
                 warp_speed = 0.5
                 warp_time = time.time()
 
+                # --- запускаємо warp-звук ---
+                warp_playing = True
+                warp_channel.play(warp_sound, loops=-1)
+
+        # --- Плавне наростання warp-звуку ---
+        if warp_playing and warp_channel.get_busy():
+            elapsed = time.time() - warp_time
+            progress = elapsed / warp_duration
+            volume = min(1.0, progress)
+            warp_channel.set_volume(volume)
+
+        # --- Малюємо текст ---
         for idx, surf in enumerate(text_surfaces):
             surf.set_alpha(alpha if not fade_out else max(fade_alpha, 0))
             x = width // 2 - surf.get_width() // 2
             y = base_y + idx * 50
             screen.blit(surf, (x, y))
 
-        # --- Кнопка ---
+        # --- Кнопка Continue ---
         button_phase = (button_phase + 0.01) % 1
         t = abs(0.5 - button_phase) * 2
         color_val = int(100 + 155 * t)
@@ -186,9 +218,10 @@ def intro_screen():
         button_text.set_alpha(255 if not fade_out else max(fade_alpha, 0))
         screen.blit(button_text, button_rect.topleft)
 
-        # --- Після warp → чорний екран ---
-        if warp_start and time.time() - warp_time > 1.5:
+        # --- Fade чорного після warp ---
+        if warp_start and time.time() - warp_time > warp_duration:
             post_warp_fade = True
+
         if post_warp_fade:
             fade_black_alpha = min(fade_black_alpha + 5, 255)
             black_surface = pygame.Surface((width, height))
@@ -196,9 +229,16 @@ def intro_screen():
             black_surface.set_alpha(fade_black_alpha)
             screen.blit(black_surface, (0, 0))
 
+            # плавно стишуємо warp-звук
+            warp_volume = warp_channel.get_volume()
+            warp_channel.set_volume(max(0.0, warp_volume - 0.03))
+            if warp_volume <= 0.05:
+                warp_channel.stop()
+
         pygame.display.flip()
         clock.tick(75)
 
+        # --- Події ---
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -206,11 +246,17 @@ def intro_screen():
             elif not fade_out:
                 if event.type == pygame.MOUSEBUTTONDOWN and button_rect.collidepoint(event.pos):
                     fade_out = True
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:  # Enter
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     fade_out = True
 
+        # --- Кінець інтро ---
         if post_warp_fade and fade_black_alpha >= 255:
+            pygame.mixer.music.stop()  # зупиняємо інтро музику повністю
+            warp_channel.stop()        # зупиняємо warp-звук
             running = False
+
+
+
 
 
 if __name__ == "__main__":
