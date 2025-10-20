@@ -2,8 +2,6 @@ from camera import Camera
 from entity import Entity
 import pygame
 
-import entity
-
 
 def wrap_text(text: str, font: pygame.font.Font, max_width: int) -> list[str]:
     """Wrap text to fit within a given width."""
@@ -23,38 +21,46 @@ def wrap_text(text: str, font: pygame.font.Font, max_width: int) -> list[str]:
     return lines
 
 
-def drawTextBox(rect: pygame.Rect, screen: pygame.Surface, message: str):
-    draw_rect = rect
-    draw_rect.centerx += 80  # Offset by 80 pixels on X-axis
-    draw_rect.centery -= 80  # Offset by 80 pixels on Y-axis
-    draw_rect.width = 300  # Set the width to 300
+def drawTextBox(draw_rect: pygame.Rect, screen: pygame.Surface, message: str):
+    # Create a temporary surface with alpha channel
+    temp_surface = pygame.Surface(draw_rect.size, pygame.SRCALPHA)
 
-    popup_color = (60, 40, 100)
-    _ = pygame.draw.rect(screen, popup_color, draw_rect, border_radius=15)
+    # Colors with transparency
+    popup_color = (60, 40, 100, 127)
+    border_color = (255, 255, 255, 127)
 
-    shadow_rect = draw_rect.move(5, 5)
-    _ = pygame.draw.rect(screen, (30, 20, 50), shadow_rect, border_radius=15)
+    # Draw box
+    pygame.draw.rect(
+        temp_surface,
+        popup_color,
+        (0, 0, draw_rect.width, draw_rect.height),
+        border_radius=15,
+    )
 
+    # Draw border
     border_thickness = 1
-    _ = pygame.draw.rect(
-        screen,
-        (255, 255, 255),
-        draw_rect,
+    pygame.draw.rect(
+        temp_surface,
+        border_color,
+        (0, 0, draw_rect.width, draw_rect.height),
         border_radius=15,
         width=border_thickness,
     )
 
+    # Draw text
     font = pygame.font.Font(None, 17)
     message_lines = message.strip().split("\n")
+    y_offset = 10
 
-    y_offset = draw_rect.top + 10
     for line in message_lines:
         wrapped_text = wrap_text(line, font, draw_rect.width - 20)
-        for line in wrapped_text:
-            text = font.render(line, True, (255, 255, 255))
-            text_rect = text.get_rect(topleft=(draw_rect.left + 10, y_offset))
-            _ = screen.blit(text, text_rect)
+        for wline in wrapped_text:
+            text = font.render(wline, True, (255, 255, 255))
+            temp_surface.blit(text, (10, y_offset))
             y_offset += font.get_height()
+
+    # Finally, blit the transparent surface onto the main screen
+    screen.blit(temp_surface, draw_rect.topleft)
 
 
 class Info(Entity):
@@ -77,5 +83,12 @@ class Info(Entity):
         self.message = message
 
     def draw(self, screen: pygame.Surface, camera: Camera):
+        draw_rect = self.rect.move(-camera.x + 70, -camera.y - 90)
+        draw_rect.width = 200
+        draw_rect.height = 120
         if self.show:
-            drawTextBox(self.rect.move(-camera.x, -camera.y), screen, self.message)
+            drawTextBox(
+                draw_rect,
+                screen,
+                self.message,
+            )

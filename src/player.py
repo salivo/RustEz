@@ -27,6 +27,7 @@ class Player(entity.Entity):
         }
         self.gun_count: int = 0
         self.gun_angle: float = 0
+        self.can_shoot: bool = True
 
     @override
     def update(self):

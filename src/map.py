@@ -6,6 +6,7 @@ from info import Info
 from globals import TILE_SIZE, global_assets
 from entity import Entity
 from globals import TILE_SIZE
+from turret import Turret
 
 
 def simplifywall(tile: int):
@@ -118,13 +119,22 @@ class Tile(Entity):
 
     @override
     def draw(self, screen: pygame.Surface, camera: pygame.Rect):  # pyright: ignore[reportIncompatibleMethodOverride]
-        # if self.tile_type == 0:
-        #     return
         try:
-            _ = screen.blit(
-                global_assets.ground_tiles[self.tile_style],
-                self.rect.move(-camera.x, -camera.y),
-            )
+            if self.tile_type == 0 or self.tile_type == 1 or self.tile_type == 2:
+                _ = screen.blit(
+                    global_assets.ground_tiles[self.tile_style],
+                    self.rect.move(-camera.x, -camera.y),
+                )
+            if self.tile_type == 3:
+                _ = screen.blit(
+                    global_assets.ground[0],
+                    self.rect.move(-camera.x, -camera.y),
+                )
+            if self.tile_type == 5:
+                _ = screen.blit(
+                    global_assets.ground[2],
+                    self.rect.move(-camera.x, -camera.y),
+                )
         except Exception:
             _ = screen.blit(
                 global_assets.ground[2],
@@ -168,6 +178,19 @@ class Map:
                 if tile == 5:
                     collide_info.append(
                         Info(
+                            x * TILE_SIZE + TILE_SIZE // 2,
+                            y * TILE_SIZE + TILE_SIZE // 2,
+                        )
+                    )
+        return collide_info
+
+    def createTurretCollisionRects(self):
+        collide_info: list[Turret] = []
+        for y, row in enumerate(self.tiles):
+            for x, tile in enumerate(row):
+                if tile == 3:
+                    collide_info.append(
+                        Turret(
                             x * TILE_SIZE + TILE_SIZE // 2,
                             y * TILE_SIZE + TILE_SIZE // 2,
                         )

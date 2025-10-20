@@ -15,6 +15,7 @@ import pygame
 from mob import Mob
 from outro import game_over_screen
 from player import Player
+from turret import Turret
 
 if SHOW_INTRO:
     from intro import init_intro, intro_screen, show_logo
@@ -40,7 +41,9 @@ bigrunning = True
 
 
 def main():
-    conditions = [False, False, False, False, False]
+    mission = [False, False]
+    mission_count = 0
+    conditions = [False, False, False]
     global bigrunning
     camera = Camera(width, height)
     player = Player(100, 100)
@@ -62,7 +65,8 @@ def main():
     collide_rects += lvl1.map.createCollisionRects()
     collide_info: list[Info] = []
     collide_info += lvl1.map.createInfoCollisionRects()
-    all_objects += collide_info
+    collide_turrets: list[Turret] = []
+    collide_turrets += lvl1.map.createTurretCollisionRects()
     running = True
 
     world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
@@ -80,15 +84,15 @@ def main():
             conditions[0] = True
         elif keys[pygame.K_s]:
             direction.y = 1
-            conditions[1] = True
+            conditions[0] = True
         else:
             direction.y = 0
         if keys[pygame.K_a]:
-            conditions[2] = True
+            conditions[1] = True
             direction.x = -1
             player.side = "left"
         elif keys[pygame.K_d]:
-            conditions[3] = True
+            conditions[1] = True
             direction.x = 1
             player.side = "right"
         else:
@@ -103,8 +107,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
                 bigrunning = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # pyright: ignore[reportAny]
-                conditions[4] = True
+            if (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == 1
+                and player.can_shoot
+            ):
+                conditions[2] = True
                 bullets.append(
                     Bullet(
                         player.rect.x,
@@ -134,10 +142,26 @@ def main():
 
         for info in collide_info:
             if player.rect.colliderect(info.rect):
-                # Handle collision
                 info.show = True
             else:
                 info.show = False
+        in_turret_zone = False
+
+        for turret in collide_turrets:
+            if player.rect.colliderect(turret.rect):
+                turret.show = True
+                in_turret_zone = True
+                if turret.fixed_percent < 100:
+                    turret.fixed_percent += turret.fix_speed
+                else:
+                    mission[mission_count] = True
+                    mission_count += 1
+                    turret.show = False
+                    collide_turrets.remove(turret)
+            else:
+                turret.show = False
+
+        player.can_shoot = not in_turret_zone
 
         camera.update(player.rect)
         _ = world_surface.fill((0, 0, 0))
@@ -160,11 +184,15 @@ def main():
 
         player.update()
         player.draw(world_surface, camera)
+        for info in collide_info:
+            info.draw(world_surface, camera)
+        for turret in collide_turrets:
+            turret.draw(world_surface, camera)
         if player.health <= 0:
             running = False
         if False in conditions:
             drawTextBox(
-                pygame.Rect((width - 800) / ZOOM_SCALE, 100, 400, 140),
+                pygame.Rect((width - 460) / ZOOM_SCALE, 10, 150, 100),
                 world_surface,
                 """Movement:
                     - W-up,
