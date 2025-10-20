@@ -4,7 +4,13 @@ from player import Player
 import pygame
 from typing import override
 from camera import Camera
-from globals import MOBS_SPEED, TILE_SIZE, COLLISION_RADIUS, MOB_VISION_RANGE
+from globals import (
+    MOB_BITE_DAMAGE,
+    MOBS_SPEED,
+    TILE_SIZE,
+    COLLISION_RADIUS,
+    MOB_VISION_RANGE,
+)
 import random
 
 
@@ -75,11 +81,10 @@ class Mob(entity.Entity):
         self.vel *= 0.9
 
         if player.rect.colliderect(self.rect):
-            if self.cooldown >= 0:
-                self.cooldown -= 1
-            else:
-                player.health -= 20
-                self.cooldown = 100
+            if self.cooldown < 0:
+                player.health -= MOB_BITE_DAMAGE
+                self.cooldown = 50
+        self.cooldown -= 1
 
     @override
     def draw(self, screen: pygame.Surface, camera: Camera):

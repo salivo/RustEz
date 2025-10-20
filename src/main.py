@@ -2,6 +2,7 @@ import random
 from bullet import Bullet
 from camera import Camera
 from entity import Entity
+from hearts import showhearts
 from info import Info
 from globals import (
     SHOW_INTRO,
@@ -131,7 +132,7 @@ while running:
         obj.draw(world_surface, camera)
 
     for mob in mobs:
-        mob.update(player, mobs)  # pyright: ignore[reportUnknownMemberType]
+        mob.update(player, mobs)  # pyright: ignore[reportArgumentType]
         if mob.should_remove:
             mobs.remove(mob)
 
@@ -147,6 +148,8 @@ while running:
         running = False
     scaled_surface = pygame.transform.scale(world_surface, (width, height))
     _ = screen.blit(scaled_surface, (0, 0))
+
+    showhearts(screen, player)
     pygame.display.flip()
     _ = clock.tick(60)
 pygame.quit()
