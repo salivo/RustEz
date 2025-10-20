@@ -126,7 +126,7 @@ while running:
     _ = world_surface.fill((0, 0, 0))
 
     for obj in all_objects:
-        if obj not in mobs:
+        if not isinstance(obj, Mob):
             obj.update()
         obj.draw(world_surface, camera)
 

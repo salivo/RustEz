@@ -60,24 +60,12 @@ class Mob(entity.Entity):
         if self.vel.length() > max_speed:
             self.vel.scale_to_length(max_speed)
 
-    # ---- Совместимая сигнатура ----
-    def update(self, *args, **kwargs):
+    @override
+    def update(self, player: Player, mobs: list[entity.Entity]):  # pyright: ignore[reportIncompatibleMethodOverride]
         # пытаемся получить player и mobs из позиционных или ключевых аргументов
         if self.health <= 0:
             self.should_remove: bool = True
-        player = None
-        mobs = None
 
-        if len(args) >= 1:
-            player = args[0]
-        if len(args) >= 2:
-            mobs = args[1]
-
-        # или из kwargs
-        player: Player = kwargs.get("player", player)
-        mobs = kwargs.get("mobs", mobs)
-
-        # поведение
         self.move_towards_player(player)
         self.avoid_others(mobs)
         self.limit_speed()
@@ -93,13 +81,13 @@ class Mob(entity.Entity):
                 player.health -= 20
                 self.cooldown = 100
 
-        @override
-        def draw(self, screen: pygame.Surface, camera: Camera):
-            _ = pygame.draw.rect(
-                screen,
-                (0, 0, 255),
-                self.rect.move(-camera.x, -camera.y),
-            )
+    @override
+    def draw(self, screen: pygame.Surface, camera: Camera):
+        _ = pygame.draw.rect(
+            screen,
+            (0, 0, 255),
+            self.rect.move(-camera.x, -camera.y),
+        )
 
 
 # def
