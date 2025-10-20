@@ -1,8 +1,11 @@
 from typing import override
+
 import pygame
+from info import Info
 
 from globals import TILE_SIZE, global_assets
 from entity import Entity
+from globals import TILE_SIZE
 
 
 def load_tiles(path: str, size: int):
@@ -58,3 +61,16 @@ class Map:
                         pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                     )
         return collide_rects
+
+    def createInfoCollisionRects(self):
+        collide_info: list[Info] = []
+        for y, row in enumerate(self.tiles):
+            for x, tile in enumerate(row):
+                if tile == 5:
+                    collide_info.append(
+                        Info(
+                            x * TILE_SIZE + TILE_SIZE // 2,
+                            y * TILE_SIZE + TILE_SIZE // 2,
+                        )
+                    )
+        return collide_info

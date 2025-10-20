@@ -2,6 +2,7 @@ import random
 from bullet import Bullet
 from camera import Camera
 from entity import Entity
+from info import Info
 from globals import (
     SHOW_INTRO,
     ZOOM_SCALE,
@@ -43,7 +44,9 @@ bullets: list[Bullet] = []
 
 collide_rects: list[pygame.Rect] = []
 collide_rects += lvl1.map.createCollisionRects()
-
+collide_info: list[Info] = []
+collide_info += lvl1.map.createInfoCollisionRects()
+all_objects += collide_info
 running = True
 
 if SHOW_INTRO:
@@ -111,6 +114,13 @@ while running:
                 player.rect.bottom = rect.top
             elif direction.y < 0:  # moving up
                 player.rect.top = rect.bottom
+
+    for info in collide_info:
+        if player.rect.colliderect(info.rect):
+            # Handle collision
+            info.show = True
+        else:
+            info.show = False
 
     camera.update(player.rect)
     _ = world_surface.fill((0, 0, 0))
