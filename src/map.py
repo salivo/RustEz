@@ -8,6 +8,94 @@ from entity import Entity
 from globals import TILE_SIZE
 
 
+def simplifywall(tile: int):
+    if tile == 2 or tile == 0:
+        return 1
+    else:
+        return 0
+
+
+def get_neighbors(grid, x: int, y: int):
+    """
+    Возвращает список из 8 значений соседних клеток вокруг (x, y)
+    Порядок:
+    1 2 3
+    4 х 5
+    6 7 8
+    Если соседа нет (за границей), возвращает 0
+    """
+    rows = len(grid)
+    cols = len(grid[0])
+
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    neighbors = []
+    for dy, dx in directions:
+        ny, nx = y + dy, x + dx
+        if 0 <= ny < rows and 0 <= nx < cols:
+            neighbors.append(simplifywall(grid[ny][nx]))
+        else:
+            neighbors.append(1)
+    return neighbors
+
+
+# --- авто-тайл (9 вариантов) ---
+def get_autotile_index(neighbors, center_type=1):
+    """
+    Возвращает индекс тайла из набора из 9 вариантов.
+    Использует 4 основных направления (вверх, вниз, лево, право).
+    Порядок соседей:
+        1 2 3
+        4 X 5
+        6 7 8
+    """
+
+    # Преобразуем соседей — 1 если совпадает тип, иначе 0
+    neighbors = [1 if n == center_type else 0 for n in neighbors]
+
+    n1, n2, n3, n4, n5, n6, n7, n8 = neighbors
+
+    top = n2
+    left = n4
+    right = n5
+    bottom = n7
+
+    # 0 — одиночный
+    # 1 — верх
+    # 2 — низ
+    # 3 — лево
+    # 4 — право
+    # 5 — верхний левый
+    # 6 — верхний правый
+    # 7 — нижний левый
+    # 8 — нижний правый
+    # 9 — центр
+
+    # if 1 == 1:
+    #     return 0
+
+    if not top and bottom and left and right:
+        return 75  # ++
+    elif not bottom and top and left and right:
+        return 83  # ++
+    elif not left and top and bottom and right:
+        return 79
+    elif not right and top and bottom and left:
+        return 87  # ++
+    elif not top and not left and bottom and right:
+        return 65  # ++
+    elif not top and not right and bottom and left:
+        return 63  # ++
+    elif not bottom and not left and top and right:
+        return 67  # ++
+    elif not bottom and not right and top and left:
+        return 69  # ++
+    elif left and top and bottom and right:
+        return 55  # ++
+    else:
+        return 48  # ++
+
+
 def load_tiles(path: str, size: int):
     sheet = pygame.image.load(path).convert_alpha()
     tiles: list[pygame.Surface] = []
@@ -28,11 +116,11 @@ class Tile(Entity):
 
     @override
     def draw(self, screen: pygame.Surface, camera: pygame.Rect):  # pyright: ignore[reportIncompatibleMethodOverride]
-        if self.tile_type == 0:
-            return
+        # if self.tile_type == 0:
+        #     return
         try:
             _ = screen.blit(
-                global_assets.ground[self.tile_style],
+                global_assets.ground_tiles[self.tile_style],
                 self.rect.move(-camera.x, -camera.y),
             )
         except Exception:
@@ -50,7 +138,15 @@ class Map:
         tiles: list[Tile] = []
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
-                tiles.append(Tile(x, y, tile, 0))
+                tiles.append(
+                    Tile(
+                        x,
+                        y,
+                        tile,
+                        get_autotile_index(get_neighbors(self.tiles, x, y)),
+                    )
+                )
+                #
         return tiles
 
     def createCollisionRects(self):
