@@ -195,6 +195,16 @@ def main():
 
         player.update()
         player.draw(world_surface, camera)
+
+        _ = overlay.fill((0, 0, 0, OVERLAY_ALPHA))
+        center_px = (
+            int((player.rect.centerx - camera.x)),
+            int((player.rect.centery - camera.y)),
+        )
+        radius_px = LIGHT_RADIUS_PX * TILE_SIZE
+        light_circle(overlay, center_px, radius_px // ZOOM_SCALE, soft_edges=SOFT_EDGES)
+        _ = world_surface.blit(overlay, (0, 0))
+
         for info in collide_info:
             info.draw(world_surface, camera)
         for turret in collide_turrets:
@@ -213,20 +223,9 @@ def main():
                     - MouseClick-shoot
                 """,
             )
-        scaled_surface = pygame.transform.scale(world_surface, (width, height))
-        _ = screen.blit(scaled_surface, (0, 0))
-
-        overlay.fill((0, 0, 0, OVERLAY_ALPHA))
-        center_px = (
-            int((player.rect.centerx - camera.x) * ZOOM_SCALE),
-            int((player.rect.centery - camera.y) * ZOOM_SCALE),
-        )
-        radius_px = LIGHT_RADIUS_PX * TILE_SIZE
-        light_circle(overlay, center_px, radius_px, soft_edges=SOFT_EDGES)
 
         scaled_surface = pygame.transform.scale(world_surface, (width, height))
         _ = screen.blit(scaled_surface, (0, 0))
-        _ = screen.blit(overlay, (0, 0))
         showhearts(screen, player)
         pygame.display.flip()
         _ = clock.tick(60)
