@@ -43,7 +43,7 @@ collide_rects += lvl1.map.createCollisionRects()
 
 running = True
 
-intro = True
+intro = False
 if intro:
     show_logo()
     intro_screen()
@@ -59,6 +59,9 @@ while running:
     # Key handling
     direction = pygame.math.Vector2()
     keys = pygame.key.get_pressed()
+    if keys[pygame.K_q]:  # game quit
+        running = False
+
     if keys[pygame.K_UP]:
         direction.y = -1
     elif keys[pygame.K_DOWN]:
