@@ -17,18 +17,22 @@ from outro import game_over_screen
 from player import Player
 
 if SHOW_INTRO:
-    from intro import intro_screen, show_logo
+    from intro import init_intro, intro_screen, show_logo
 
+# --- Initialization ---
+if not pygame.get_init():
+    _ = pygame.init()
+if not pygame.mixer.get_init():
+    pygame.mixer.init()
 
-_ = pygame.init()
-pygame.mixer.init()
-
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-pygame.display.set_caption("RustEz")
+# --- Display setup ---
 info = pygame.display.Info()
 width, height = info.current_w, info.current_h
+screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
+pygame.display.set_caption("RustEz")
 
 if SHOW_INTRO:
+    init_intro(screen, width, height)  # pyright: ignore[reportPossiblyUnboundVariable]
     show_logo()  # pyright: ignore[reportPossiblyUnboundVariable]
     intro_screen()  # pyright: ignore[reportPossiblyUnboundVariable]
 
