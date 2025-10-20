@@ -152,7 +152,7 @@ def tutorial_complete_screen():
             mx, my = pygame.mouse.get_pos()
             hover_level = level_rect.collidepoint(mx, my)
             hover_quit = quit_rect.collidepoint(mx, my)
-            draw_button("GO TO LEVEL 1", level_rect, button_alpha, hover_level)
+            draw_button("FIRST MISSION", level_rect, button_alpha, hover_level)
             draw_button("QUIT", quit_rect, button_alpha, hover_quit)
 
         pygame.display.flip()
@@ -168,7 +168,7 @@ def tutorial_complete_screen():
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN and impact_done and speed == 0:
                 if level_rect.collidepoint(event.pos):
-                    print("First level starting...")
+                    print("Mission is starting...")
                     return True
                 elif quit_rect.collidepoint(event.pos):
                     pygame.quit()
