@@ -5,13 +5,10 @@ TILE_SIZE = 32
 MOB_VISION_RANGE = 10 * TILE_SIZE
 MVR_MULTIPLIER = 2
 MOBS_SPEED = 2
-<<<<<<< Updated upstream
+
 PLAYER_SPEED = 3
 SHOW_INTRO = True
-=======
-PLAYER_SPEED = 5  # 3 is realistic
-SHOW_INTRO = False
->>>>>>> Stashed changes
+
 ZOOM_SCALE = 3
 MOB_BITE_DAMAGE = 10
 
