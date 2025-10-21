@@ -20,6 +20,7 @@ from hearts import showhearts
 from info import Info, drawTextBox
 from lighting import light_circle, make_dark_overlay
 from map import Tile
+from minimap import Minimap, infer_world_bounds
 from mob import Mob
 from outro import game_over_screen
 from player import Player
@@ -237,6 +238,21 @@ def main():
 
         scaled_surface = pygame.transform.scale(world_surface, (width, height))
         _ = screen.blit(scaled_surface, (0, 0))
+
+        world_rect = infer_world_bounds(collide_rects, all_objects)
+        minimap = Minimap(world_rect, size=(220, 220), margin=16)
+        minimap.draw(
+            screen=screen,
+            collide_rects=collide_rects,
+            player_rect=player.rect,
+            mobs=mobs,
+            turrets=collide_missions,
+            infos=collide_info,
+            camera=camera,
+            world_surface=world_surface,
+            corner="bottomleft",
+        )
+
         showhearts(screen, player)
         pygame.display.flip()
         _ = clock.tick(60)
