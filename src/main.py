@@ -87,6 +87,7 @@ def main():
 
     frame = 0
     frame_speed = 1
+    auto_shot_frame = 0
 
     clock = pygame.time.Clock()
     pygame.mixer.music.load("assets/theme.mp3")
@@ -95,7 +96,11 @@ def main():
 
     while running:
         frame += frame_speed
-
+        auto_shot_frame += 1
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                bigrunning = False
         # Key handling
         direction = pygame.math.Vector2()
         keys = pygame.key.get_pressed()
@@ -126,16 +131,10 @@ def main():
         else:
             player.state = "idle"
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                bigrunning = False
-            if (
-                event.type == pygame.MOUSEBUTTONDOWN
-                and event.button == 1
-                and player.can_shoot
-            ):
-                conditions[2] = True
+        mouse_buttons = pygame.mouse.get_pressed()
+        if mouse_buttons[0] and player.can_shoot:
+            conditions[2] = True
+            if auto_shot_frame >= 8:
                 bullets.append(
                     Bullet(
                         player.rect.x,
@@ -144,6 +143,7 @@ def main():
                         direction * player.speed,
                     )
                 )
+                auto_shot_frame = 0
 
         # player collision
         # Horizontal
@@ -205,7 +205,7 @@ def main():
             frame = 0
 
         camera.update(player.rect)
-        _ = world_surface.fill((0, 0, 0))
+        _ = world_surface.fill((43, 30, 64))
 
         for obj in all_objects:
             if not isinstance(obj, Mob):
