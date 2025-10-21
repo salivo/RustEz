@@ -10,6 +10,7 @@ from globals import (
     TILE_SIZE,
     COLLISION_RADIUS,
     MOB_VISION_RANGE,
+    MVR_MULTIPLIER,
     global_assets,
 )
 import random
@@ -37,14 +38,16 @@ class Mob(entity.Entity):
         dy = player.rect.centery - self.rect.centery
         return math.degrees(math.atan2(dy, dx))
 
-    def move_towards_player(self, player):
+    def move_towards_player(self, player, is_event_time):
         if player is None:
             return
         dx = player.rect.centerx - self.rect.centerx
         dy = player.rect.centery - self.rect.centery
         distance = math.hypot(dx, dy)
 
-        if distance > 0 and distance < MOB_VISION_RANGE:
+        if distance > 0 and distance < (
+            MOB_VISION_RANGE + is_event_time * MOB_VISION_RANGE * MVR_MULTIPLIER
+        ):
             direction = pygame.Vector2(dx, dy) / distance
             self.vel += direction * random.uniform(MOBS_SPEED / 2, MOBS_SPEED)
 
@@ -74,14 +77,14 @@ class Mob(entity.Entity):
             self.vel.scale_to_length(max_speed)
 
     @override
-    def update(self, player: Player, mobs: list[entity.Entity]):  # pyright: ignore[reportIncompatibleMethodOverride]
+    def update(self, player: Player, mobs: list[entity.Entity], is_event_time: bool):  # pyright: ignore[reportIncompatibleMethodOverride]
         # пытаемся получить player и mobs из позиционных или ключевых аргументов
         if self.health <= 0:
             if global_assets.mob_death_sound:
                 _ = global_assets.mob_death_sound.play()
             self.should_remove: bool = True
 
-        self.move_towards_player(player)
+        self.move_towards_player(player, is_event_time)
         self.avoid_others(mobs)
         self.limit_speed()
         # применение скорости к позиции/rect
@@ -110,6 +113,10 @@ class Mob(entity.Entity):
             if self.frame < frame_end:
                 self.frame += self.die_animation_speed
             self.image_count = int(self.frame)
+<<<<<<< Updated upstream
+=======
+            # print(self.image_count)
+>>>>>>> Stashed changes
 
         rotated_image = pygame.transform.rotate(
             global_assets.beetles[self.image_count], -self.angle_to_player + 90

@@ -84,12 +84,17 @@ def main():
 
     world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
 
+    frame = 0
+    frame_speed = 1
+
     clock = pygame.time.Clock()
     pygame.mixer.music.load("assets/theme.mp3")
     pygame.mixer.music.set_volume(0.3)
     pygame.mixer.music.play(-1)
 
     while running:
+        frame += frame_speed
+
         # Key handling
         direction = pygame.math.Vector2()
         keys = pygame.key.get_pressed()
@@ -186,6 +191,16 @@ def main():
 
         player.can_shoot = not in_turret_zone
 
+        is_event_time = in_turret_zone
+        if frame >= 200 and is_event_time:
+            new_mob = Mob(
+                player, random.randrange(-100, 100), random.randrange(-100, 100)
+            )
+
+            mobs.append(new_mob)
+            all_objects.append(new_mob)
+            frame = 0
+
         camera.update(player.rect)
         _ = world_surface.fill((0, 0, 0))
 
@@ -195,7 +210,7 @@ def main():
             obj.draw(world_surface, camera)
 
         for mob in mobs:
-            mob.update(player, mobs)  # pyright: ignore[reportArgumentType]
+            mob.update(player, mobs, is_event_time)  # pyright: ignore[reportArgumentType]
             if mob.should_remove:
                 mobs.remove(mob)
 
