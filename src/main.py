@@ -58,7 +58,6 @@ bigrunning = True
 def main(lvl):
     global win
     win = False
-    mission_checklist: list[bool] = [False, False]
     mission_count = 0
     conditions = [False, False, False]
     global bigrunning
@@ -76,6 +75,7 @@ def main(lvl):
     collide_info += lvl.map.createInfoCollisionRects()
     collide_missions: list[Mission] = []
     collide_missions += lvl.map.createMissionCollisionRects()
+    mission_checklist: list[bool] = [False] * len(collide_missions)
     running = True
 
     world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
