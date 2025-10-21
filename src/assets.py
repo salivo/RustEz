@@ -10,6 +10,7 @@ class Assets:
     hearts: list[pygame.Surface] = []
     beetles: list[pygame.Surface] = []
     ground_tiles: list[pygame.Surface] = []
+    totem: list[pygame.Surface] = []
 
     def load(self):
         self.player = self._load_spritesheet("assets/player.png", 32, 32)
@@ -20,6 +21,7 @@ class Assets:
         self.hearts = self._load_spritesheet("assets/hearts.png", 16, 16)
         self.beetles = self._load_spritesheet("assets/beetle.png", 32, 32)
         self.ground_tiles = self._load_spritesheet("assets/ground_tiles1.png", 32, 32)
+        self.totem = self._load_spritesheet("assets/totem.png", 32, 64)
 
     def _load_spritesheet(
         self, path: str, tile_w: int, tile_h: int

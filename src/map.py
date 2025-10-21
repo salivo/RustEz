@@ -120,7 +120,12 @@ class Tile(Entity):
     @override
     def draw(self, screen: pygame.Surface, camera: pygame.Rect):  # pyright: ignore[reportIncompatibleMethodOverride]
         try:
-            if self.tile_type == 0 or self.tile_type == 1 or self.tile_type == 2:
+            if (
+                self.tile_type == 0
+                or self.tile_type == 1
+                or self.tile_type == 2
+                or self.tile_type == 5
+            ):
                 _ = screen.blit(
                     global_assets.ground_tiles[self.tile_style],
                     self.rect.move(-camera.x, -camera.y),
@@ -132,8 +137,8 @@ class Tile(Entity):
                 )
             if self.tile_type == 5:
                 _ = screen.blit(
-                    global_assets.ground[2],
-                    self.rect.move(-camera.x, -camera.y),
+                    global_assets.totem[0],
+                    self.rect.move(-camera.x, -camera.y - TILE_SIZE),
                 )
         except Exception:
             _ = screen.blit(
