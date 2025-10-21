@@ -113,11 +113,6 @@ class Mob(entity.Entity):
             if self.frame < frame_end:
                 self.frame += self.die_animation_speed
             self.image_count = int(self.frame)
-<<<<<<< Updated upstream
-=======
-            # print(self.image_count)
->>>>>>> Stashed changes
-
         rotated_image = pygame.transform.rotate(
             global_assets.beetles[self.image_count], -self.angle_to_player + 90
         )
