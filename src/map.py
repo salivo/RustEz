@@ -57,11 +57,14 @@ def get_autotile_index(neighbors: list[int], center_type: int = 1) -> int:
     neighbors = [1 if n == center_type else 0 for n in neighbors]
 
     n1, n2, n3, n4, n5, n6, n7, n8 = neighbors
-
+    t_l = n1
     top = n2
+    t_r = n3
     left = n4
     right = n5
+    b_l = n6
     bottom = n7
+    b_r = n8
 
     # 0 — одиночный
     # 1 — верх
@@ -76,6 +79,7 @@ def get_autotile_index(neighbors: list[int], center_type: int = 1) -> int:
 
     # if 1 == 1:
     #     return 0
+    #   not
 
     if not top and bottom and left and right:
         return 75  # ++
@@ -94,7 +98,16 @@ def get_autotile_index(neighbors: list[int], center_type: int = 1) -> int:
     elif not bottom and not right and top and left:
         return 69  # ++
     elif left and top and bottom and right:
-        return 55  # ++
+        if not t_l:
+            return 99
+        elif not t_r:
+            return 95
+        elif not b_l:
+            return 101
+        elif not b_r:
+            return 102
+        else:
+            return 55  # ++
     else:
         return 48  # ++
 
