@@ -1,11 +1,12 @@
 from typing import override
 import pygame
 from camera import Camera
-from info import Info, drawTextBox
+from entity import Entity
+from info import drawTextBox
 from progressbar import draw_progress_bar
 
 
-class Turret(Info):
+class Mission(Entity):
     def __init__(
         self,
         x: int = 0,

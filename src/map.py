@@ -6,7 +6,7 @@ from info import Info
 from globals import TILE_SIZE, global_assets
 from entity import Entity
 from globals import TILE_SIZE
-from turret import Turret
+from mission import Mission
 
 
 def simplifywall(tile: int):
@@ -130,9 +130,18 @@ class Tile(Entity):
                     global_assets.ground_tiles[self.tile_style],
                     self.rect.move(-camera.x, -camera.y),
                 )
+            _ = screen.blit(
+                global_assets.ground_tiles[self.tile_style],
+                self.rect.move(-camera.x, -camera.y),
+            )
             if self.tile_type == 3:
                 _ = screen.blit(
-                    global_assets.ground[0],
+                    global_assets.missions[1],
+                    self.rect.move(-camera.x, -camera.y),
+                )
+            if self.tile_type == 6:
+                _ = screen.blit(
+                    global_assets.missions[3],
                     self.rect.move(-camera.x, -camera.y),
                 )
             if self.tile_type == 5:
@@ -189,15 +198,23 @@ class Map:
                     )
         return collide_info
 
-    def createTurretCollisionRects(self):
-        collide_info: list[Turret] = []
+    def createMissionCollisionRects(self):
+        collide_info: list[Mission] = []
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
                 if tile == 3:
                     collide_info.append(
-                        Turret(
+                        Mission(
                             x * TILE_SIZE + TILE_SIZE // 2,
                             y * TILE_SIZE + TILE_SIZE // 2,
+                        )
+                    )
+                elif tile == 6:
+                    collide_info.append(
+                        Mission(
+                            x * TILE_SIZE + TILE_SIZE // 2,
+                            y * TILE_SIZE + TILE_SIZE // 2,
+                            message="Fixing power",
                         )
                     )
         return collide_info

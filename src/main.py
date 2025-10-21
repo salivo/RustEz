@@ -22,7 +22,7 @@ from lighting import light_circle, make_dark_overlay
 from mob import Mob
 from outro import game_over_screen
 from player import Player
-from turret import Turret
+from mission import Mission
 from tutorialcomp import tutorial_complete_screen
 
 if SHOW_INTRO:
@@ -52,7 +52,7 @@ bigrunning = True
 def main():
     global win
     win = False
-    mission: list[bool] = [False, False]
+    mission_checklist: list[bool] = [False, False]
     mission_count = 0
     conditions = [False, False, False]
     global bigrunning
@@ -76,8 +76,8 @@ def main():
     collide_rects += lvl1.map.createCollisionRects()
     collide_info: list[Info] = []
     collide_info += lvl1.map.createInfoCollisionRects()
-    collide_turrets: list[Turret] = []
-    collide_turrets += lvl1.map.createTurretCollisionRects()
+    collide_missions: list[Mission] = []
+    collide_missions += lvl1.map.createMissionCollisionRects()
     running = True
 
     world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
@@ -158,19 +158,20 @@ def main():
                 info.show = False
         in_turret_zone = False
 
-        for turret in collide_turrets:
-            if player.rect.colliderect(turret.rect):
-                turret.show = True
+        for mission in collide_missions:
+            if player.rect.colliderect(mission.rect):
+                mission.show = True
                 in_turret_zone = True
-                if turret.fixed_percent < 100:
-                    turret.fixed_percent += turret.fix_speed
+                if mission.fixed_percent < 100:
+                    mission.fixed_percent += mission.fix_speed
                 else:
-                    mission[mission_count] = True
+                    mission_checklist[mission_count] = True
                     mission_count += 1
-                    turret.show = False
-                    collide_turrets.remove(turret)
+                    mission.show = False
+
+                    collide_missions.remove(mission)
             else:
-                turret.show = False
+                mission.show = False
 
         player.can_shoot = not in_turret_zone
 
@@ -207,8 +208,8 @@ def main():
 
         for info in collide_info:
             info.draw(world_surface, camera)
-        for turret in collide_turrets:
-            turret.draw(world_surface, camera)
+        for mission in collide_missions:
+            mission.draw(world_surface, camera)
         if player.health <= 0:
             running = False
         if False in conditions:
@@ -230,7 +231,7 @@ def main():
         pygame.display.flip()
         _ = clock.tick(60)
 
-        if False not in mission:
+        if False not in mission_checklist:
             running = False
             win = True
 
