@@ -240,7 +240,7 @@ def main():
             running = False
         if False in conditions:
             drawTextBox(
-                pygame.Rect((width - 460) / ZOOM_SCALE, 10, 150, 100),
+                pygame.Rect((width - 460) / ZOOM_SCALE, 10, 150, 87),
                 world_surface,
                 """Movement:
                     - W-up,
