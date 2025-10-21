@@ -104,9 +104,9 @@ def main():
         # Key handling
         direction = pygame.math.Vector2()
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_q]:  # game quit
-            running = False
-            bigrunning = False
+        # if keys[pygame.K_q]:  # game quit
+        #     running = False
+        #     bigrunning = False
         if keys[pygame.K_w]:
             direction.y = -1
             conditions[0] = True
