@@ -19,6 +19,7 @@ from globals import (
 from hearts import showhearts
 from info import Info, drawTextBox
 from lighting import light_circle, make_dark_overlay
+from map import Tile
 from mob import Mob
 from outro import game_over_screen
 from player import Player
@@ -33,6 +34,8 @@ if not pygame.get_init():
     _ = pygame.init()
 if not pygame.mixer.get_init():
     pygame.mixer.init()
+
+global_assets.load()
 
 # --- Display setup ---
 info = pygame.display.Info()
@@ -59,8 +62,6 @@ def main():
     camera = Camera(width, height)
     player = Player(100, 100)
 
-    global_assets.load()
-
     all_objects: list[Entity] = []
     all_objects += lvl1.map.createTilesArray()
 
@@ -83,6 +84,10 @@ def main():
     world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
 
     clock = pygame.time.Clock()
+    pygame.mixer.music.load("assets/theme.mp3")
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+
     while running:
         # Key handling
         direction = pygame.math.Vector2()
@@ -168,7 +173,12 @@ def main():
                     mission_checklist[mission_count] = True
                     mission_count += 1
                     mission.show = False
-
+                    for object in all_objects:
+                        if object.rect.colliderect(mission.rect):
+                            if isinstance(object, Tile):
+                                object.tile_style_overlay -= 1
+                    if global_assets.turret_repaired:
+                        _ = global_assets.turret_repaired.play()
                     collide_missions.remove(mission)
             else:
                 mission.show = False
@@ -234,13 +244,17 @@ def main():
         if False not in mission_checklist:
             running = False
             win = True
+            _ = pygame.time.delay(1500)
 
 
 while bigrunning:
     main()
+    pygame.mixer.music.stop()
     if not bigrunning:
         break
     if win:
+        if global_assets.win:
+            _ = global_assets.win.play()
         _ = tutorial_complete_screen()
     else:
         _ = game_over_screen()

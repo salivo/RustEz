@@ -16,7 +16,7 @@ def simplifywall(tile: int):
         return 0
 
 
-def get_neighbors(grid, x: int, y: int):
+def get_neighbors(grid: list[list[int]], x: int, y: int) -> list[int]:
     """
     Возвращает список из 8 значений соседних клеток вокруг (x, y)
     Порядок:
@@ -43,7 +43,7 @@ def get_neighbors(grid, x: int, y: int):
 
 
 # --- авто-тайл (9 вариантов) ---
-def get_autotile_index(neighbors, center_type=1):
+def get_autotile_index(neighbors: list[int], center_type: int = 1) -> int:
     """
     Возвращает индекс тайла из набора из 9 вариантов.
     Использует 4 основных направления (вверх, вниз, лево, право).
@@ -109,23 +109,21 @@ def load_tiles(path: str, size: int):
 
 
 class Tile(Entity):
-    def __init__(self, x: int, y: int, tile_type: int, tile_style: int):
+    def __init__(
+        self, x: int, y: int, tile_type: int, tile_style: int, tile_style_overlay: int
+    ):
         super().__init__()
         self.rect: pygame.Rect = pygame.Rect(
             x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE
         )
         self.tile_type: int = tile_type
         self.tile_style: int = tile_style
+        self.tile_style_overlay: int = tile_style_overlay
 
     @override
     def draw(self, screen: pygame.Surface, camera: pygame.Rect):  # pyright: ignore[reportIncompatibleMethodOverride]
         try:
-            if (
-                self.tile_type == 0
-                or self.tile_type == 1
-                or self.tile_type == 2
-                or self.tile_type == 5
-            ):
+            if self.tile_type in [0, 1, 2, 5]:
                 _ = screen.blit(
                     global_assets.ground_tiles[self.tile_style],
                     self.rect.move(-camera.x, -camera.y),
@@ -134,14 +132,9 @@ class Tile(Entity):
                 global_assets.ground_tiles[self.tile_style],
                 self.rect.move(-camera.x, -camera.y),
             )
-            if self.tile_type == 3:
+            if self.tile_type in [3, 6]:
                 _ = screen.blit(
-                    global_assets.missions[1],
-                    self.rect.move(-camera.x, -camera.y),
-                )
-            if self.tile_type == 6:
-                _ = screen.blit(
-                    global_assets.missions[3],
+                    global_assets.missions[self.tile_style_overlay],
                     self.rect.move(-camera.x, -camera.y),
                 )
             if self.tile_type == 5:
@@ -159,20 +152,26 @@ class Tile(Entity):
 class Map:
     def __init__(self):
         self.tiles: list[list[int]] = []
+        self.missions: list[Tile] = []
 
     def createTilesArray(self):
         tiles: list[Tile] = []
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
+                overlay_style: int = 0
+                if tile == 3:
+                    overlay_style = 1
+                elif tile == 6:
+                    overlay_style = 3
                 tiles.append(
                     Tile(
                         x,
                         y,
                         tile,
                         get_autotile_index(get_neighbors(self.tiles, x, y)),
+                        overlay_style,
                     )
                 )
-                #
         return tiles
 
     def createCollisionRects(self):
