@@ -1,12 +1,13 @@
 import random
 
 import pygame
-
+import math
 import levels.level1 as lvl1
 from bullet import Bullet
 from camera import Camera
 from entity import Entity
 from globals import (
+    MOB_VISION_RANGE,
     NUM_MOBS,
     OVERLAY_ALPHA,
     LIGHT_RADIUS_PX,
@@ -67,8 +68,8 @@ def main():
     all_objects += lvl1.map.createTilesArray()
 
     mobs = [
-        Mob(player, random.randrange(-100, 100), random.randrange(-100, 100))
-        for _ in range(NUM_MOBS)
+        # Mob(player, random.randrange(-100, 100), random.randrange(-100, 100))
+        # for _ in range(NUM_MOBS)
     ]
     all_objects += mobs
 
@@ -192,10 +193,12 @@ def main():
         player.can_shoot = not in_turret_zone
 
         is_event_time = in_turret_zone
-        if frame >= 200 and is_event_time:
-            new_mob = Mob(
-                player, random.randrange(-100, 100), random.randrange(-100, 100)
-            )
+
+        angle = random.uniform(0, 2 * math.pi)  # случайный угол
+        msx = player.rect.centerx + MOB_VISION_RANGE * math.cos(angle)
+        msy = player.rect.centery + MOB_VISION_RANGE * math.sin(angle)
+        if frame >= 50 and is_event_time:
+            new_mob = Mob(player, msx, msy)
 
             mobs.append(new_mob)
             all_objects.append(new_mob)
