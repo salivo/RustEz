@@ -36,8 +36,11 @@ class Bullet(Entity):
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
         for rect in collide_rects:
             if self.rect.colliderect(rect):
-                self.should_remove = True
+                self.should_remove: bool = True
         for mob in mobs:
             if self.rect.colliderect(mob.rect):
                 mob.health -= self.health
                 self.should_remove = True
+                if global_assets.hit_sound:
+                    global_assets.hit_sound.set_volume(0.5)
+                    _ = global_assets.hit_sound.play()

@@ -31,7 +31,9 @@ class Mob(entity.Entity):
         self.animation_speed: float = 0.1
         self.die_animation_speed: float = 0.25
         self.angle_to_player: float = 0
-        self.dead_animation = False
+        self.dead_animation: bool = False
+        self.hit_frame: float = 0
+        self.last_health: int = self.health
 
     def getAngleToPlayer(self, player: Player) -> float:
         dx = player.rect.centerx - self.rect.centerx
@@ -128,3 +130,12 @@ class Mob(entity.Entity):
                 5,
                 self.health / 100,
             )
+        if self.health != self.last_health:
+            if self.hit_frame < 3:
+                self.hit_frame += 1
+                _ = screen.blit(global_assets.hit_particles[0], self.rect)
+            else:
+                self.last_health = self.health
+                self.hit_frame = 0
+            rect = rect.move(rect.width / 2, rect.height / 2)
+            _ = screen.blit(global_assets.hit_particles[int(self.hit_frame)], rect)

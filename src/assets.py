@@ -8,6 +8,7 @@ class Assets:
     shot_sound: pygame.mixer.Sound | None = None
     mob_death_sound: pygame.mixer.Sound | None = None
     turret_repaired: pygame.mixer.Sound | None = None
+    hit_sound: pygame.mixer.Sound | None = None
     win: pygame.mixer.Sound | None = None
     theme: pygame.mixer.Sound | None = None
     hearts: list[pygame.Surface] = []
@@ -15,6 +16,7 @@ class Assets:
     ground_tiles: list[pygame.Surface] = []
     totem: list[pygame.Surface] = []
     missions: list[pygame.Surface] = []
+    hit_particles: list[pygame.Surface] = []
 
     def load(self):
         self.player = self._load_spritesheet("assets/player.png", 32, 32)
@@ -23,6 +25,7 @@ class Assets:
         self.shot_sound = pygame.mixer.Sound("assets/shot_sound.mp3")
         self.shot_sound.set_volume(0.5)
         self.mob_death_sound = pygame.mixer.Sound("assets/mob_death.wav")
+        self.hit_sound = pygame.mixer.Sound("assets/hit_sound.mp3")
         self.hearts = self._load_spritesheet("assets/hearts.png", 16, 16)
         self.beetles = self._load_spritesheet("assets/beetle.png", 32, 32)
         self.ground_tiles = self._load_spritesheet("assets/ground_tiles1.png", 32, 32)
@@ -30,6 +33,7 @@ class Assets:
         self.missions = self._load_spritesheet("assets/missions.png", 32, 32)
         self.turret_repaired = pygame.mixer.Sound("assets/turret_repaired.mp3")
         self.win = pygame.mixer.Sound("assets/win.mp3")
+        self.hit_particles = self._load_spritesheet("assets/hit_particles.png", 16, 16)
 
     def _load_spritesheet(
         self, path: str, tile_w: int, tile_h: int
