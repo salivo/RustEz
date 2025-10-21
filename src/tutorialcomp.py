@@ -14,7 +14,14 @@ clock = pygame.time.Clock()
 # --- Кольори ---
 BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)
-CONFETTI_COLORS = [(255, 255, 0), (255, 0, 0), (0, 255, 255), (0, 255, 0), (255, 100, 255), (255, 165, 0)]
+CONFETTI_COLORS = [
+    (255, 255, 0),
+    (255, 0, 0),
+    (0, 255, 255),
+    (0, 255, 0),
+    (255, 100, 255),
+    (255, 165, 0),
+]
 
 # --- Шрифти ---
 title_font = pygame.font.SysFont("Franklin Gothic Medium", 100, True)
@@ -26,15 +33,20 @@ BUTTON_HOVER_COLOR = (30, 30, 0)
 BUTTON_BORDER = (255, 255, 0)
 BUTTON_TEXT_COLOR = (255, 255, 0)
 
+
 def draw_button(text, rect, alpha, hover):
     """Малює кнопку"""
     button_surface = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
     color = (BUTTON_HOVER_COLOR if hover else BUTTON_COLOR) + (alpha,)
     border = BUTTON_BORDER + (alpha,)
-    pygame.draw.rect(button_surface, color, (0, 0, rect.width, rect.height), border_radius=10)
-    pygame.draw.rect(button_surface, border, (0, 0, rect.width, rect.height), 4, border_radius=10)
+    pygame.draw.rect(
+        button_surface, color, (0, 0, rect.width, rect.height), border_radius=10
+    )
+    pygame.draw.rect(
+        button_surface, border, (0, 0, rect.width, rect.height), 4, border_radius=10
+    )
     text_render = button_font.render(text, True, BUTTON_TEXT_COLOR)
-    text_rect = text_render.get_rect(center=(rect.width//2, rect.height//2))
+    text_rect = text_render.get_rect(center=(rect.width // 2, rect.height // 2))
     button_surface.blit(text_render, text_rect)
     screen.blit(button_surface, rect.topleft)
 
@@ -60,22 +72,38 @@ class Confetti:
         self.opacity = max(0, self.opacity - 0.2)
 
     def draw(self, surface):
-        surf = pygame.Surface((self.size*2, self.size*2), pygame.SRCALPHA)
+        surf = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
         color = (*self.color, int(self.opacity))
 
         if self.shape == "circle":
             pygame.draw.circle(surf, color, (self.size, self.size), self.size)
         elif self.shape == "square":
             rotated = pygame.transform.rotate(
-                pygame.Surface((self.size, self.size), pygame.SRCALPHA), math.degrees(self.angle)
+                pygame.Surface((self.size, self.size), pygame.SRCALPHA),
+                math.degrees(self.angle),
             )
             rotated.fill(color)
-            surf.blit(rotated, (self.size - rotated.get_width()//2, self.size - rotated.get_height()//2))
+            surf.blit(
+                rotated,
+                (
+                    self.size - rotated.get_width() // 2,
+                    self.size - rotated.get_height() // 2,
+                ),
+            )
         else:  # triangle
             points = [
-                (self.size + math.cos(self.angle) * self.size, self.size + math.sin(self.angle) * self.size),
-                (self.size + math.cos(self.angle + 2.1) * self.size, self.size + math.sin(self.angle + 2.1) * self.size),
-                (self.size + math.cos(self.angle + 4.2) * self.size, self.size + math.sin(self.angle + 4.2) * self.size)
+                (
+                    self.size + math.cos(self.angle) * self.size,
+                    self.size + math.sin(self.angle) * self.size,
+                ),
+                (
+                    self.size + math.cos(self.angle + 2.1) * self.size,
+                    self.size + math.sin(self.angle + 2.1) * self.size,
+                ),
+                (
+                    self.size + math.cos(self.angle + 4.2) * self.size,
+                    self.size + math.sin(self.angle + 4.2) * self.size,
+                ),
             ]
             pygame.draw.polygon(surf, color, points)
 
@@ -83,11 +111,15 @@ class Confetti:
 
 
 def tutorial_complete_screen():
-    text_surface = title_font.render("TUTORIAL COMPLETE", True, YELLOW)
-    outline = pygame.Surface((text_surface.get_width()+4, text_surface.get_height()+4), pygame.SRCALPHA)
+    text_surface = title_font.render("LEVEL COMPLETE", True, YELLOW)
+    outline = pygame.Surface(
+        (text_surface.get_width() + 4, text_surface.get_height() + 4), pygame.SRCALPHA
+    )
     for dx in [-2, 0, 2]:
         for dy in [-2, 0, 2]:
-            outline.blit(title_font.render("TUTORIAL COMPLETE", True, (0, 0, 0)), (dx+2, dy+2))
+            outline.blit(
+                title_font.render("LEVEL COMPLETE", True, (0, 0, 0)), (dx + 2, dy + 2)
+            )
     outline.blit(text_surface, (2, 2))
 
     # --- Анімація тексту ---
@@ -103,8 +135,12 @@ def tutorial_complete_screen():
 
     # --- Кнопки ---
     button_size = (320, 80)
-    level_rect = pygame.Rect(WIDTH//2 - button_size[0]//2, HEIGHT//2 + 150, *button_size)
-    quit_rect = pygame.Rect(WIDTH//2 - button_size[0]//2, level_rect.bottom + 40, *button_size)
+    level_rect = pygame.Rect(
+        WIDTH // 2 - button_size[0] // 2, HEIGHT // 2 + 150, *button_size
+    )
+    quit_rect = pygame.Rect(
+        WIDTH // 2 - button_size[0] // 2, level_rect.bottom + 40, *button_size
+    )
 
     # --- Конфеті ---
     confetti_list = [Confetti() for _ in range(120)]
@@ -140,9 +176,11 @@ def tutorial_complete_screen():
                 scale = 1.0
                 show_confetti = True  # запускаємо конфеті
 
-        scaled_surface = pygame.transform.smoothscale(outline,
-            (int(outline.get_width() * scale), int(outline.get_height() * scale)))
-        rect = scaled_surface.get_rect(center=(WIDTH//2, HEIGHT//2 - 100))
+        scaled_surface = pygame.transform.smoothscale(
+            outline,
+            (int(outline.get_width() * scale), int(outline.get_height() * scale)),
+        )
+        rect = scaled_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
         screen.blit(scaled_surface, rect)
 
         # --- Кнопки ---
@@ -152,7 +190,7 @@ def tutorial_complete_screen():
             mx, my = pygame.mouse.get_pos()
             hover_level = level_rect.collidepoint(mx, my)
             hover_quit = quit_rect.collidepoint(mx, my)
-            draw_button("FIRST MISSION", level_rect, button_alpha, hover_level)
+            draw_button("CONTINUE", level_rect, button_alpha, hover_level)
             draw_button("QUIT", quit_rect, button_alpha, hover_quit)
 
         pygame.display.flip()

@@ -3,6 +3,7 @@ import random
 import pygame
 import math
 import levels.level1 as lvl1
+import levels.level2 as lvl2
 from bullet import Bullet
 from camera import Camera
 from entity import Entity
@@ -54,7 +55,7 @@ if SHOW_INTRO:
 bigrunning = True
 
 
-def main():
+def main(lvl):
     global win
     win = False
     mission_checklist: list[bool] = [False, False]
@@ -65,22 +66,16 @@ def main():
     player = Player(100, 100)
 
     all_objects: list[Entity] = []
-    all_objects += lvl1.map.createTilesArray()
-
-    mobs = [
-        # Mob(player, random.randrange(-100, 100), random.randrange(-100, 100))
-        # for _ in range(NUM_MOBS)
-    ]
-    all_objects += mobs
+    all_objects += lvl.map.createTilesArray()
 
     bullets: list[Bullet] = []
-
+    mobs = []
     collide_rects: list[pygame.Rect] = []
-    collide_rects += lvl1.map.createCollisionRects()
+    collide_rects += lvl.map.createCollisionRects()
     collide_info: list[Info] = []
-    collide_info += lvl1.map.createInfoCollisionRects()
+    collide_info += lvl.map.createInfoCollisionRects()
     collide_missions: list[Mission] = []
-    collide_missions += lvl1.map.createMissionCollisionRects()
+    collide_missions += lvl.map.createMissionCollisionRects()
     running = True
 
     world_surface = pygame.Surface((width / ZOOM_SCALE, height / ZOOM_SCALE))
@@ -281,8 +276,10 @@ def main():
             _ = pygame.time.delay(1500)
 
 
+levels = [lvl1, lvl2]
+lvl_count = 0
 while bigrunning:
-    main()
+    main(levels[lvl_count])
     pygame.mixer.music.stop()
     if not bigrunning:
         break
@@ -290,7 +287,10 @@ while bigrunning:
         if global_assets.win:
             _ = global_assets.win.play()
         _ = tutorial_complete_screen()
+        lvl_count += 1
+        if lvl_count > len(levels):
+            bigrunning = False
+            break
     else:
         _ = game_over_screen()
-
 pygame.quit()
