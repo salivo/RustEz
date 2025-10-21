@@ -2,7 +2,7 @@ import random
 
 import pygame
 import math
-import levels.level1 as lvl1
+import levels.level3 as lvl1
 import levels.level2 as lvl2
 from bullet import Bullet
 from camera import Camera

@@ -71,7 +71,7 @@ class Info(Entity):
         show: bool = False,
         message="""
         Welcome, commander. Your current task is to:
-        - Explore the map and locate broken turrets.
+        - Explore the map and locate broken turrets and power supplie.
         - Defeat enemies and protect your base.
         - Return to me when you're done, so I can give you another assignment.
         """,
