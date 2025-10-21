@@ -14,6 +14,8 @@ from globals import (
 )
 import random
 
+from progressbar import draw_progress_bar_2
+
 
 class Mob(entity.Entity):
     def __init__(self, player, x, y):
@@ -26,7 +28,9 @@ class Mob(entity.Entity):
         self.image_count: int = 0
         self.frame: float = 0
         self.animation_speed: float = 0.1
+        self.die_animation_speed: float = 0.25
         self.angle_to_player: float = 0
+        self.dead_animation = False
 
     def getAngleToPlayer(self, player: Player) -> float:
         dx = player.rect.centerx - self.rect.centerx
@@ -73,6 +77,8 @@ class Mob(entity.Entity):
     def update(self, player: Player, mobs: list[entity.Entity]):  # pyright: ignore[reportIncompatibleMethodOverride]
         # пытаемся получить player и mobs из позиционных или ключевых аргументов
         if self.health <= 0:
+            if global_assets.mob_death_sound:
+                _ = global_assets.mob_death_sound.play()
             self.should_remove: bool = True
 
         self.move_towards_player(player)
@@ -99,8 +105,25 @@ class Mob(entity.Entity):
 
     @override
     def draw(self, screen: pygame.Surface, camera: Camera):
+        if self.should_remove:
+            frame_end = 7
+            if self.frame < frame_end:
+                self.frame += self.die_animation_speed
+            self.image_count = int(self.frame)
+            print(self.image_count)
+
         rotated_image = pygame.transform.rotate(
             global_assets.beetles[self.image_count], -self.angle_to_player + 90
         )
         rect = rotated_image.get_rect(center=self.rect.center)
-        _ = screen.blit(rotated_image, rect.move(-camera.x, -camera.y))
+        rect = rect.move(-camera.x, -camera.y)
+        _ = screen.blit(rotated_image, rect)
+        if not self.should_remove:
+            draw_progress_bar_2(
+                screen,
+                rect.x,
+                rect.y,
+                30,
+                5,
+                self.health / 100,
+            )
