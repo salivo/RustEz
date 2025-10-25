@@ -4,7 +4,7 @@ import pygame
 from info import Info
 
 from globals import TILE_SIZE, global_assets
-from entity import Entity
+from entities.entity import Entity
 from globals import TILE_SIZE
 from mission import Mission
 

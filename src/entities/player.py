@@ -2,7 +2,7 @@ import math
 from typing import override
 import pygame
 from camera import Camera
-import entity
+from entities import entity
 from globals import PLAYER_SPEED, ZOOM_SCALE, global_assets
 
 PLAYER_MAGIC_OFFSET_TO_CENTER = 7

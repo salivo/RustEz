@@ -1,6 +1,6 @@
 import pygame
 from globals import global_assets
-from player import Player
+from entities.player import Player
 
 HEART_SIZE = 32
 

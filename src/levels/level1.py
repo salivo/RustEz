@@ -1,6 +1,6 @@
 import os
 import json
-from map import Map
+from .map import Map
 
 _here = os.path.dirname(__file__)
 

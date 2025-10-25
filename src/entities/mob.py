@@ -1,6 +1,6 @@
 import math
-import entity
-from player import Player
+from entities import entity
+from .player import Player
 import pygame
 from typing import override
 from camera import Camera
@@ -15,7 +15,7 @@ from globals import (
 )
 import random
 
-from progressbar import draw_progress_bar_2
+from interface.progressbar import draw_progress_bar_2
 
 
 class Mob(entity.Entity):

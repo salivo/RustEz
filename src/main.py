@@ -4,9 +4,9 @@ import pygame
 import math
 import levels.level1 as lvl1
 import levels.level2 as lvl2
-from bullet import Bullet
+from entities.bullet import Bullet
 from camera import Camera
-from entity import Entity
+from entities.entity import Entity
 from globals import (
     MOB_VISION_RANGE,
     NUM_MOBS,
@@ -18,19 +18,23 @@ from globals import (
     ZOOM_SCALE,
     global_assets,
 )
-from hearts import showhearts
+from interface.hearts import showhearts
 from info import Info, drawTextBox
 from lighting import light_circle, make_dark_overlay
-from map import Tile
-from minimap import Minimap, infer_world_bounds
-from mob import Mob
-from outro import game_over_screen
-from player import Player
+from levels.map import Tile
+from interface.minimap import Minimap, infer_world_bounds
+from entities.mob import Mob
+from ingame_transition.outro import game_over_screen
+from entities.player import Player
 from mission import Mission
 from tutorialcomp import tutorial_complete_screen
 
+import sys, os
+
+sys.path.append(os.path.dirname(__file__))
+
 if SHOW_INTRO:
-    from intro import init_intro, intro_screen, show_logo
+    from ingame_transition.intro import init_intro, intro_screen, show_logo
 
 # --- Initialization ---
 if not pygame.get_init():

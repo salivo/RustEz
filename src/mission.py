@@ -1,9 +1,9 @@
 from typing import override
 import pygame
 from camera import Camera
-from entity import Entity
+from entities.entity import Entity
 from info import drawTextBox
-from progressbar import draw_progress_bar
+from interface.progressbar import draw_progress_bar
 
 
 class Mission(Entity):

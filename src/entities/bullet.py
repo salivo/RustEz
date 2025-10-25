@@ -1,9 +1,9 @@
 import math
 from typing import override
 import pygame
-from entity import Entity
+from .entity import Entity
 from globals import BULLET_SPEED, global_assets
-from mob import Mob
+from .mob import Mob
 
 MAGIC_X = 10
 MAGIC_Y = 19

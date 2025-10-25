@@ -1,5 +1,5 @@
 from camera import Camera
-from entity import Entity
+from entities.entity import Entity
 import pygame
 
 
